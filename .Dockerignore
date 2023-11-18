@@ -1,0 +1,39 @@
+# Ignore common development files and directories
+.git
+node_modules
+*.pyc
+*.pyo
+__pycache__
+
+# Ignore Django specific files
+*.pyc
+*.pyo
+__pycache__
+*.pyd
+db.sqlite3
+
+# Ignore Node.js specific files
+package-lock.json
+yarn.lock
+
+# Ignore frontend build artifacts
+/build
+/dist
+
+# Ignore editor-specific files
+.vscode
+.idea
+
+# Ignore test files
+__tests__
+*.test.js
+*.test.ts
+*.test.tsx
+
+# Ignore Docker-related files
+.dockerignore
+Dockerfile
+
+# Ignore miscellaneous files
+*.log
+.DS_Store
