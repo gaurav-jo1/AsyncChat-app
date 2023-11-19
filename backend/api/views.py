@@ -1,23 +1,29 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework.parsers import JSONParser
 
 from .models import ProgrammingLanguages
+from .serializers import ProgrammingLanguages_Serializer
+
 
 # Create your views here.
 @api_view(["GET", "POST"])
-def languages_list(request, new_language=None):
+@permission_classes([AllowAny])
+def languages_list(request):
     if request.method == "GET":
         languages = ProgrammingLanguages.objects.all()
-
-        if languages:
+        if languages.exists():
+            serializer = ProgrammingLanguages_Serializer(languages, many=True)
             return Response(
                 data={
                     "message": "Here is the list of languages.",
-                    "languages": languages,
+                    "languages": serializer.data,
                 },
                 status=status.HTTP_200_OK,
             )
+
         return Response(
             data={
                 "message": "No data available.",
@@ -27,26 +33,24 @@ def languages_list(request, new_language=None):
         )
 
     elif request.method == "POST":
-        if new_language:
-            instance, created = ProgrammingLanguages.objects.get_or_create(
-                language_name=new_language
+        data = request.data.get("language")
+
+        if data:
+            add_language, created = ProgrammingLanguages.objects.get_or_create(
+                language_name=data
             )
 
             if created:
                 return Response(
                     data={
-                        "message": f"The new language '{new_language}' is added.",
-                        "language": instance,
+                        "message": f"The new language '{data}' is added.",
+                        "language": data,
                     },
                     status=status.HTTP_201_CREATED,
                 )
-            return Response(
-                data={
-                    "message": f"The language '{new_language}' already exists.",
-                    "language": instance,
-                },
-                status=status.HTTP_200_OK,
-            )
+            else:
+                return Response(data={"message": f"The language already exist"})
+
         else:
             return Response(
                 {"error": "Please provide a language name."},

@@ -1,6 +1,4 @@
-FROM ubuntu:latest
-
-RUN apt-get update && apt-get install -y python3-pip
+FROM python:3.12.0-alpine3.18
 
 ENV PYTHONUNBUFFERED 1
 
@@ -20,4 +18,4 @@ COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # Use 'bash' as the entry point and pass the script as an argument
-ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]
