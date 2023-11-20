@@ -27,10 +27,7 @@ def languages_list(request):
             )
 
         return Response(
-            data={
-                "message": "No data available.",
-                "languages": None,
-            },
+            serializer.data,
             status=status.HTTP_204_NO_CONTENT,
         )
 
@@ -109,3 +106,4 @@ class languages_class_list(APIView):
                 {"error": "Please provide a language name."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
