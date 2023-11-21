@@ -16,6 +16,7 @@ from rest_framework.views import APIView
 def languages_list(request):
     if request.method == "GET":
         languages = ProgrammingLanguages.objects.all()
+
         if languages.exists():
             serializer = ProgrammingLanguages_Serializer(languages, many=True)
             return Response(
@@ -27,13 +28,11 @@ def languages_list(request):
             )
 
         return Response(
-            serializer.data,
             status=status.HTTP_204_NO_CONTENT,
         )
 
     elif request.method == "POST":
         data = request.data.get("language")
-
         if data:
             add_language, created = ProgrammingLanguages.objects.get_or_create(
                 language_name=data
@@ -106,4 +105,3 @@ class languages_class_list(APIView):
                 {"error": "Please provide a language name."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-

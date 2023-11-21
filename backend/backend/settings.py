@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import sys
 from pathlib import Path
 from decouple import config
 
@@ -97,15 +98,13 @@ DATABASES = {
         "PORT": "5432",
     },
     'test': {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": config("PG_DB"),
-        "USER": config("PG_USER"),
-        "PASSWORD": config("PG_PASSWORD"),
-        "HOST": config("PG_HOST"),
-        "PORT": "5432",
-    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "test_db.sqlite3",
+    }
 }
 
+if 'test' in sys.argv:
+    DATABASES['default'] = DATABASES['test']
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
