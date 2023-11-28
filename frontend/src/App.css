@@ -1,0 +1,14 @@
+.websocket {
+  margin: 20px 0;
+}
+
+.websocket input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid gray;
+}
+
+.websocket input:last-child {
+    margin-left: 10px;
+    cursor: pointer;
+}

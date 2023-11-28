@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # Apps
     "api",
+    "chat",
 ]
 
 MIDDLEWARE = [
@@ -82,6 +84,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = "backend.asgi.application"
 WSGI_APPLICATION = "backend.wsgi.application"
 
 
@@ -97,14 +100,14 @@ DATABASES = {
         "HOST": config("PG_HOST"),
         "PORT": "5432",
     },
-    'test': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "test_db.sqlite3",
-    }
+    "test": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "test_db.sqlite3",
+    },
 }
 
-if 'test' in sys.argv:
-    DATABASES['default'] = DATABASES['test']
+if "test" in sys.argv:
+    DATABASES["default"] = DATABASES["test"]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
