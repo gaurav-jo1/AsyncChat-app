@@ -1,24 +1,47 @@
-# Django
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-db.sqlite3
-*.log
-*.pot
-*.pyc
-*.pyo
-__pycache__/
-local_settings.py
+# Ignore local development configuration
+.env
 
-# React
-node_modules/
-build/
-/.idea/
-.DS_Store
-
-# Docker
+# Ignore Docker related files
 docker-compose.yml
 docker-compose.override.yml
-.docker/
-.env
+.dockerignore
+
+# Ignore PostgreSQL data directory
+data/
+
+# Ignore Redis data directory
+redis-data/
+
+# Ignore system and temporary files
+*.log
+*.swp
+.DS_Store
+Thumbs.db
+
+# Ignore compiled files
+*.pyc
+__pycache__/
+
+# Ignore virtual environment
+venv/
+.env/
+
+# Ignore IDE-specific files and directories
+.idea/
+.vscode/
+
+# Ignore cache and compiled files
+*.pyc
+__pycache__/
+
+# Ignore runtime and build artifacts
+*.pyo
+*.pyc
+*.pyd
+
+# Ignore local SQLite database file
+db.sqlite3
+
+# Ignore macOS metadata
+._*
+.DS_Store
