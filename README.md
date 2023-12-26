@@ -4,5 +4,7 @@ This repository aims to provide a flexible and scalable architecture for buildin
 
 ## Requirements
 Python 3.11+
+
 Node 20.10 +
+
 Docker
