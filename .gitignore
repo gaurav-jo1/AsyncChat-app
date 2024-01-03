@@ -2,12 +2,11 @@
 .env
 
 # Ignore Docker related files
-docker-compose.yml
 docker-compose.override.yml
 .dockerignore
 
 # Ignore PostgreSQL data directory
-data/
+/database/*.txt
 
 # Ignore Redis data directory
 redis-data/

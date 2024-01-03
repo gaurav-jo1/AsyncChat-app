@@ -1,16 +1,29 @@
 import json
-
 from channels.generic.websocket import WebsocketConsumer
 
 class ChatConsumer(WebsocketConsumer):
+
     def connect(self):
         self.accept()
+        print("WebSocket connection established")
 
     def disconnect(self, close_code):
-        pass
+        print("WebSocket disconnected")
 
     def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        print("Received raw text_data:", text_data)
 
-        self.send(text_data=json.dumps({"message": message}))
+        try:
+            text_data_json = json.loads(text_data)
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON: {e}")
+            return
+
+        print("Received JSON data:", text_data_json)
+
+        message = text_data_json.get("message")
+
+        if message:
+            self.send(text_data=json.dumps({"message": message}))
+        else:
+            print("Invalid or missing 'message' key in JSON data")

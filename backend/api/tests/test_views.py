@@ -10,7 +10,22 @@ class Test_Languages(TestCase):
         self.my_view_url = reverse("get_or_add_languages")
 
     def test_language_view_GET(self):
-        languages = ["JavaScript", "Kotlin", "Python"]
+        languages = [
+            "Python",
+            "JavaScript",
+            "Java",
+            "C++",
+            "C#",
+            "Ruby",
+            "Swift",
+            "Go",
+            "Kotlin",
+            "Rust",
+            "PHP",
+            "HTML",
+            "CSS",
+            "SQL",
+        ]
         for language in languages:
             ProgrammingLanguages.objects.create(language_name=language)
 

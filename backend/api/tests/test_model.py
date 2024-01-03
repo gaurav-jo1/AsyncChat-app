@@ -22,8 +22,8 @@ class ProgrammingLanguagesTest(TestCase):
         "SQL",
         ]
 
-        for i in range(len(programming_languages)):
-            ProgrammingLanguages.objects.create(language_name=programming_languages[i])
+        for language in programming_languages:
+            ProgrammingLanguages.objects.create(language_name=language)
 
     def test_language_name(self):
         # Retrieve the ProgrammingLanguages object from the database
