@@ -10,9 +10,9 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=/run/secrets/postgres_auth
-      - POSTGRES_USER=/run/secrets/postgres_auth
-      - POSTGRES_PASSWORD=/run/secrets/postgres_auth
+      POSTGRES_USER: gauravpostgres
+      POSTGRES_PASSWORD: gauravpostgres
+      POSTGRES_DB: gauravpostgres
     secrets:
       - postgres_auth
 
@@ -25,10 +25,10 @@ services:
       - "6379:6379"
 
   backend:
+    container_name: backend_container
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: backend_container
     ports:
       - "8000:8000"
     volumes:
@@ -40,8 +40,6 @@ services:
 secrets:
   postgres_auth:
     file: ./database/postgres_auth.txt
-  backend_auth:
-    file: ./database/postgres_auth.txt
-
+    
 volumes:
   pgdata: {}

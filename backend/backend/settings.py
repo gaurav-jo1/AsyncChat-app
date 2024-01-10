@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 import dotenv
 from pathlib import Path
-from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,9 +27,9 @@ if os.path.isfile(dotenv_file):
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ["SECRET_KEY"]
+SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG_BOOLEAN", default=False, cast=bool)
+DEBUG = os.environ.get("DEBUG_BOOLEAN", False),
 
 ALLOWED_HOSTS = []
 
@@ -120,11 +119,11 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("PG_DB", "postgres"),
-        "USER": os.environ.get("PG_USER", "postgres"),
-        "PASSWORD": os.environ.get("PG_PASSWORD", "postgres"),
-        "HOST": os.environ.get("PG_HOST", "localhost"),
-        "PORT": "5432",
+        'NAME': os.environ.get('PG_DB', 'gauravpostgres'),
+        'USER': os.environ.get('PG_USER', 'gauravpostgres'),
+        'PASSWORD': os.environ.get('PG_PASSWORD', 'gauravpostgres'),
+        'HOST': os.environ.get('PG_HOST', 'db'),
+        'PORT': os.environ.get('PG_PORT', '5432'),
     }
 }
 
