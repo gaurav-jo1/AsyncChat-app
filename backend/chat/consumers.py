@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 
 class ChatConsumer(WebsocketConsumer):
+    print("Using the Websocket connection")
 
     def connect(self):
         self.accept()
@@ -27,3 +28,4 @@ class ChatConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps({"message": message}))
         else:
             print("Invalid or missing 'message' key in JSON data")
+
