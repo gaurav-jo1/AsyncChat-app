@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   db:
-    container_name: db
+    container_name: python_async_db
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -10,14 +10,14 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: /run/secrets/postgres_auth
+      POSTGRES_DB_FILE: /run/secrets/postgres_auth
       POSTGRES_USER_FILE: /run/secrets/postgres_auth
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_auth
     secrets:
       - postgres_auth
 
   redis:
-    container_name: redis
+    container_name: python_async_redis
     build:
       context: ./redis
       dockerfile: Dockerfile
@@ -25,7 +25,7 @@ services:
       - "6379:6379"
 
   backend:
-    container_name: backend_container
+    container_name: python_async_backend_container
     build:
       context: ./backend
       dockerfile: Dockerfile

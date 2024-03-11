@@ -11,25 +11,22 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
-import dotenv
+from dotenv import load_dotenv
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-dotenv_file = os.path.join(BASE_DIR, ".env")
-if os.path.isfile(dotenv_file):
-    dotenv.load_dotenv(dotenv_file)
-
+# Loading .env file
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG_BOOLEAN", False),
+DEBUG = (os.getenv("DEBUG_BOOLEAN", False),)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -47,6 +44,7 @@ INSTALLED_APPS = [
     # tools
     "rest_framework",
     "corsheaders",
+    "channels",
     # apps
     "api",
     "chat",
@@ -93,8 +91,8 @@ TEMPLATES = [
     },
 ]
 
-
 ASGI_APPLICATION = "backend.asgi.application"
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -104,7 +102,6 @@ CHANNEL_LAYERS = {
     },
 }
 WSGI_APPLICATION = "backend.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -119,11 +116,11 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        'NAME': os.environ.get('PG_DB', 'gauravpostgres'),
-        'USER': os.environ.get('PG_USER', 'gauravpostgres'),
-        'PASSWORD': os.environ.get('PG_PASSWORD', 'gauravpostgres'),
-        'HOST': os.environ.get('PG_HOST', 'db'),
-        'PORT': os.environ.get('PG_PORT', '5432'),
+        "NAME": os.getenv("PG_DB"),
+        "USER": os.getenv("PG_USER"),
+        "PASSWORD": os.getenv("PG_PASSWORD"),
+        "HOST": os.getenv("PG_HOST"),
+        "PORT": os.getenv("PG_PORT"),
     }
 }
 
