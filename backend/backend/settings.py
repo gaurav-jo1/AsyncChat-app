@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     "channels",
     # apps
     "api",
-    "chat",
+    "chats",
 ]
 
 MIDDLEWARE = [
@@ -92,15 +92,6 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = "backend.asgi.application"
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
 WSGI_APPLICATION = "backend.wsgi.application"
 
 # Database
@@ -123,6 +114,16 @@ DATABASES = {
         "PORT": os.getenv("PG_PORT"),
     }
 }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],  # Use the service name 'redis'
+        },
+    },
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

@@ -9,8 +9,8 @@ const HomePage:React.FC = () => {
         <h1>What chat room would you like to enter?</h1>
 
         <form>
-            <input type="text"/>
-            <input type="button"/>
+            <input type="text" placeholder='Enter the Room Number'/>
+            <input type="button" value='Submit'/>
         </form>
     </div>
   )

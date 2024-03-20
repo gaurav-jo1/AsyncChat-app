@@ -1,46 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 const App: React.FC = () => {
-  const [socket, setSocket] = useState<any>(null);
-  const [message, setMessage] = useState<string>("");
+  const [welcomeMessage, setWelcomeMessage] = useState("");
 
-  useEffect(() => {
-    // Replace 'ws://localhost:8080' with your WebSocket server URL
-    const ws = new WebSocket("ws://0.0.0.0:8000/ws/chat/1/");
+  const { sendJsonMessage } = useWebSocket("ws://127.0.0.1:8000/");
 
-    console.log("WS", ws)
 
-    ws.addEventListener("open", () => {
-      console.log("WebSocket connection established");
-    });
+  const { readyState } = useWebSocket("ws://127.0.0.1:8000/", {
+    onOpen: () => {
+      console.log("Connected!");
+    },
+    onClose: () => {
+      console.log("Disconnected!");
+    },
 
-    ws.addEventListener("message", (event) => {
-      console.log(`Received message: ${event.data}`);
-    });
 
-    ws.addEventListener("close", () => {
-      console.log("WebSocket connection closed");
-    });
-
-    setSocket(ws);
-  }, []);
-
-  const sendMessage = () => {
-    if (socket) {
-      socket.send(message);
+    onMessage: (e) => {
+      const data = JSON.parse(e.data);
+      switch (data.type) {
+        case "welcome_message":
+          setWelcomeMessage(data.message);
+          break;
+        default:
+          console.log("Unknown message type!");
+          break;
+      }
     }
-  };
+  });
+
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: "Connecting",
+    [ReadyState.OPEN]: "Open",
+    [ReadyState.CLOSING]: "Closing",
+    [ReadyState.CLOSED]: "Closed",
+    [ReadyState.UNINSTANTIATED]: "Uninstantiated"
+  }[readyState];
 
   return (
     <div>
-      <textarea cols={100} rows={20}></textarea> <br />
-      <input
-        type="text"
-        placeholder="Enter message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <input type="submit" onClick={sendMessage} />
+      <span>The WebSocket is currently {connectionStatus}</span>
+      <p>{welcomeMessage}</p>
+
+      <button
+        className="bg-gray-300 px-3 py-1"
+        onClick={() => {
+          sendJsonMessage({
+            type: "greeting",
+            message: "Hi!"
+          });
+        }}
+      >
+        Say Hi
+      </button>
     </div>
   );
 };
