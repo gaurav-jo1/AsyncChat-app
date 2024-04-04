@@ -6,6 +6,7 @@ const App: React.FC = () => {
 
   const { sendJsonMessage } = useWebSocket("ws://127.0.0.1:8000/");
 
+
   const { readyState } = useWebSocket("ws://127.0.0.1:8000/", {
     onOpen: () => {
       console.log("Connected!");
@@ -13,6 +14,7 @@ const App: React.FC = () => {
     onClose: () => {
       console.log("Disconnected!");
     },
+
 
     onMessage: (e) => {
       const data = JSON.parse(e.data);

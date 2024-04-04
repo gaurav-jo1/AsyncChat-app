@@ -3,8 +3,7 @@ import time
 
 async def my_async_function(num:str):
     print(f"Inside async function {num}")
-    # await asyncio.sleep(1)
-    await time.sleep(1)
+    await asyncio.sleep(2)
     print(f"Async function {num} completed")
 
 async def main():

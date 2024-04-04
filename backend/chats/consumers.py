@@ -33,4 +33,3 @@ class ChatConsumer(JsonWebsocketConsumer):
             print(content["message"])
         return super().receive_json(content, **kwargs)
 
-# My mind is focused on enriching the future, yet there's still a part of me searching for the piece I left behind.
