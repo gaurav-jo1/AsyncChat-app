@@ -1,35 +1,63 @@
-from channels.generic.websocket import JsonWebsocketConsumer
+import json
 
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import WebsocketConsumer
 
-class ChatConsumer(JsonWebsocketConsumer):
-    """
-    This consumer is used to show user's online status,
-    and send notifications.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)  # Corrected super() call
-        self.room_name = None
-
+class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        print("Connected!")
-        self.room_name = "home"
-        self.accept()
-        self.send_json(
-            {
-                "type": "welcome_message",
-                "message": "Hey there! You've successfully connected!",
-            }
+        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        self.room_group_name = f"chat_{self.room_name}"
+
+        # Join room group
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_group_name, self.channel_name
         )
 
-    def disconnect(self, code):
-        print("Disconnected!")
-        return super().disconnect(code)
-    
+        self.accept()
 
-    def receive_json(self, content, **kwargs):
-        message_type = content["type"]
-        if message_type == "greeting":
-            print(content["message"])
-        return super().receive_json(content, **kwargs)
+        self.send(
+            json.dumps(
+                {
+                    "type": "welcome_message",
+                    "message": "Welcome to the Gaurav Websocket Connection",
+                }
+            )
+        )
 
+    def disconnect(self, close_code):
+        # Leave room group
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_group_name, self.channel_name
+        )
+
+    def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        
+        type = text_data_json["type"]
+
+        if type == "greeting":
+            # Send reply of greeting
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name, {"type": "greeting_message"}
+            )
+
+        elif type == "message":
+            message = text_data_json["message"]
+            username = text_data_json["username"]
+
+            # Send message to room group
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name, {"type": "chat_message", "message": message, "username": username}
+            )
+
+    # Receive message from room group
+    def chat_message(self, event):
+        message = event["message"]
+        username = event["username"]
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({"type": "message", "message": message, "username": username}))
+
+    def greeting_message(self, event):
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({ "type":"greeting_reply", "message": "Hey How you doing!"}))
