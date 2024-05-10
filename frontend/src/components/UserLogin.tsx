@@ -13,7 +13,7 @@ const UserLogin: React.FC = () => {
     console.log(userLogged);
 
     if (userLogged) {
-      navigate("/chat");
+      navigate("/");
     }
   }, [userLogged]);
 
@@ -22,7 +22,7 @@ const UserLogin: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = {
-      email: email,
+      username: email,
       password: password,
     };
 
@@ -60,8 +60,8 @@ const UserLogin: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          name="email"
+          type="username"
+          name="username"
           placeholder="Enter Your Email"
           onChange={(e) => setEmail(e.target.value)}
         />

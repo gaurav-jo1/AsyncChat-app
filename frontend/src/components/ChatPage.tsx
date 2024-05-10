@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { useParams } from "react-router-dom";
 
 // Styling
 import "../styling/ChatPage.css";
@@ -8,18 +9,20 @@ import { AuthContext } from "../context/AuthContext";
 interface MessageType {
   type: string;
   username: string;
-  message: string
+  message: string;
 }
 
 const ChatPage: React.FC = () => {
+  const { roomname } = useParams<{ roomname: string }>();
+
   const [message, setMessage] = useState<string>("");
   const [messageHistory, setMessageHistory] = useState<MessageType[]>([]);
   const [welcomeMessage, setWelcomeMessage] = useState<string>("");
-  
-  const { username } = useContext(AuthContext);
+
+  const { username, authTokens } = useContext(AuthContext);
 
   const { sendJsonMessage } = useWebSocket(
-    "ws://127.0.0.1:8000/chat/game_room/"
+    authTokens ? `ws://127.0.0.1:8000/chat/${roomname}/` : null
   );
 
   const send_message = () => {
@@ -31,32 +34,38 @@ const ChatPage: React.FC = () => {
     });
   };
 
-  const { readyState } = useWebSocket("ws://127.0.0.1:8000/chat/game_room/", {
-    onOpen: () => {
-      console.log("Connected!");
-    },
-    onClose: () => {
-      console.log("Disconnected!");
-    },
+  const { readyState } = useWebSocket(
+    authTokens ? `ws://127.0.0.1:8000/chat/${roomname}/` : null,
+    {
+      queryParams: {
+        token: authTokens ? authTokens.access : "",
+      },
+      onOpen: () => {
+        console.log("Connected!");
+      },
+      onClose: () => {
+        console.log("Disconnected!");
+      },
 
-    onMessage: (e) => {
-      const data = JSON.parse(e.data);
-      switch (data.type) {
-        case "welcome_message":
-          setWelcomeMessage(data.message);
-          break;
-        case "message":
-          setMessageHistory((prev: any) => prev.concat(data));
-          break;
-        case "greeting_reply":
-          console.log(data);
-          break;
-        default:
-          console.log("Unknown message type!");
-          break;
-      }
-    },
-  });
+      onMessage: (e) => {
+        const data = JSON.parse(e.data);
+        switch (data.type) {
+          case "welcome_message":
+            setWelcomeMessage(data.message);
+            break;
+          case "message":
+            setMessageHistory((prev: any) => prev.concat(data));
+            break;
+          case "greeting_reply":
+            console.log(data);
+            break;
+          default:
+            console.log("Unknown message type!");
+            break;
+        }
+      },
+    }
+  );
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: "Connecting",
@@ -70,7 +79,7 @@ const ChatPage: React.FC = () => {
     <div className="chatpage_container">
       {/* Main body */}
       <div className="chatpage_main-body">
-        <h1>ChatPage</h1>
+        <h1>{roomname}</h1>
         <span>The WebSocket is currently {connectionStatus}</span>
         <span>{welcomeMessage}</span>
 

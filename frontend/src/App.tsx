@@ -4,6 +4,7 @@ import UserLogin from "./components/UserLogin";
 import ChatPage from "./components/ChatPage";
 
 import AuthProvider from "./context/AuthContext";
+import { ProtectedRoutes } from "./secure_routes/ProtectedRoutes";
 
 import { Navigate, Route, Routes } from "react-router-dom";
 
@@ -15,7 +16,14 @@ const App: React.FC = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<UserLogin />} />
-          <Route path="/chat" element={<ChatPage />} />
+          <Route
+            path="/chat/:roomname"
+            element={
+              <ProtectedRoutes>
+                <ChatPage />
+              </ProtectedRoutes>
+            }
+          />
         </Routes>
       </AuthProvider>
     </div>
