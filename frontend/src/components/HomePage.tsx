@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styling/HomePage.css";
+import { AuthContext } from "../context/AuthContext";
 
 const HomePage: React.FC = () => {
   const [roomName, setRoomName] = useState<string>("");
+  const { authTokens } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   const navigateToRoom = () => {
-    navigate(`/chat/${roomName}/`);
+    authTokens ? navigate(`/chat/${roomName}/`) : "";
   };
 
   return (

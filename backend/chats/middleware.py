@@ -3,41 +3,52 @@ from rest_framework_simplejwt.tokens import AccessToken
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AnonymousUser
+import jwt
+from rest_framework.exceptions import AuthenticationFailed
 
-class JWTAuthMiddleware(BaseMiddleware):
-    def __init__(self, inner):
-        self.inner = inner
+
+class JWTAuthMiddleware:
+    def __init__(self, app):
+        # Store the ASGI application we were passed
+        self.app = app
 
     async def __call__(self, scope, receive, send):
-        query_string = scope["query_string"]
+        query_params = scope["query_string"].decode()
+        if not query_params:
+            await send(
+                {
+                    "type": "websocket.close",
+                    "code": 4000,
+                    "reason": "Invalid token parameter",
+                }
+            )
+            return
 
-        if query_string:
-            try:
-                token = self.extract_token(query_string)
-                if token:
-                    access_token = AccessToken(token)
-                    user_id = access_token.payload.get("user_id")
-                    if user_id:
-                        scope["user"] = await self.get_user(user_id)
-                    else:
-                        scope["user"] = AnonymousUser()
-                else:
-                    scope["user"] = AnonymousUser()
-            except Exception as e:
-                print(f"Error parsing token: {e}")
-                scope["user"] = AnonymousUser()
-        else:
-            scope["user"] = AnonymousUser()
+        token = query_params.split("=")[1]
+        scope["token"] = token
+        scope["user"] = await get_user(scope)
 
-        return await super().__call__(scope, receive, send)
+        return await self.app(scope, receive, send)
 
-    def extract_token(self, query_string):
-        try:
-            token = query_string.decode().split("=")[1]
-            return token
-        except IndexError:
-            return None
 
-    @database_sync_to_async
-    def get_user(self, user_id):
-        return User.objects.get(id=user_id)
+@database_sync_to_async
+def get_user(scope):
+    if "token" not in scope:
+        raise ValueError(
+            "Cannot find token in scope. You should wrap your consumer in "
+            "TokenAuthMiddleware."
+        )
+    token = scope["token"]
+    user = None
+    try:
+        access_token = AccessToken(token)
+        user_id = access_token.payload.get("user_id")
+        user = User.objects.get(id=user_id)
+    except jwt.ExpiredSignatureError:
+        raise AuthenticationFailed("Token has expired")
+    except jwt.InvalidTokenError:
+        raise AuthenticationFailed("Invalid token")
+    except User.DoesNotExist:
+        raise AuthenticationFailed("User not found")
+
+    return user or AnonymousUser()

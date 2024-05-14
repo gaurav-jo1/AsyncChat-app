@@ -1,11 +1,11 @@
 import json
 from uuid import UUID
 from django.contrib.auth.models import AnonymousUser
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.generic.websocket import JsonWebsocketConsumer
 from chats.models import Message, Conversation
-from django.contrib.auth.models import User
 from chats.serializers import MessageSerializer
-from channels.db import database_sync_to_async
+from asgiref.sync import async_to_sync
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class UUIDEncoder(json.JSONEncoder):
@@ -16,7 +16,7 @@ class UUIDEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class ChatConsumer(AsyncJsonWebsocketConsumer):
+class ChatConsumer(JsonWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -24,31 +24,16 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         self.conversation_name = None
         self.conversation = None
 
-    async def connect(self):
+    def connect(self):
         self.user = self.scope["user"]
-
-        print(self.user)
+        print(f"Self User: {self.user}")
 
         if isinstance(self.user, AnonymousUser):
             # Reject connection for anonymous users
-            await self.close()
+            self.close()
             return
 
-        print(f"User: {self.user}")
-
-        await self.accept()
-
-        self.conversation_name = (
-            f"{self.scope['url_route']['kwargs']['conversation_name']}"
-        )
-
-        print(f"Conversation name: {self.conversation_name}")
-
-        self.conversation, created = await database_sync_to_async(
-            Conversation.objects.get_or_create
-        )(name=self.conversation_name)
-
-        await self.channel_layer.group_add(self.conversation_name, self.channel_name)
+        self.accept()
 
         self.send_json(
             {
@@ -57,72 +42,81 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
-        await database_sync_to_async(self.conversation.online.add)(self.user)
+        self.conversation_name = (
+            f"{self.scope['url_route']['kwargs']['conversation_name']}"
+        )
+
+        self.conversation, created = Conversation.objects.get_or_create(
+            name=self.conversation_name
+        )
+
+        self.channel_layer.group_add(self.conversation_name, self.channel_name)
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.conversation_name,
+            self.channel_name,
+        )
+
+        # Adding User as a Member
+        self.conversation.add_member(self.user)
+
+        # Making User Online
+        self.conversation.join(self.user)
 
         messages = self.conversation.messages.all().order_by("-timestamp")[0:10]
-        message_count = await database_sync_to_async(
-            self.conversation.messages.all().count
-        )()
-        print(f"Messages Count: {message_count}")
+        message_count = self.conversation.messages.all().count()
 
-        # message_count = 0
-        # print(f"Self Conversation: {self.conversation}")
+        print(f"Message Count {message_count}")
 
-        if message_count:
-            messages = self.conversation.messages.all().order_by("-timestamp")[0:10]
-            self.send_json(
-                {
-                    "type": "last_50_messages",
-                    "messages": MessageSerializer(messages, many=True).data,
-                    "has_more": message_count > 50,
-                }
-            )
+        self.send_json(
+            {
+                "type": "last_50_messages",
+                "messages": MessageSerializer(messages, many=True).data,
+                "has_more": message_count > 5,
+            }
+        )
 
-        else:
-            self.send_json(
-                {
-                    "type": "last_50_messages",
-                    "messages": None,
-                    "has_more": message_count > 50,
-                }
-            )
-
-    async def disconnect(self, close_code):
+    def disconnect(self, close_code):
         # Leave room group
 
         if self.user.is_authenticated:
             # send the leave event to the room
-            await self.channel_layer.group_send(
+            self.channel_layer.group_send(
                 self.conversation_name,
                 {
                     "type": "user_leave",
                     "user": self.user.username,
                 },
             )
-            # self.conversation.online.remove(self.user)
-        return await super().disconnect(close_code)
 
-    async def get_receiver(self):
-        usernames = self.conversation_name.split("__")
-        for username in usernames:
-            if username != self.user.username:
-                # This is the receiver
-                return await User.objects.get(username=username)
+        self.conversation.leave(self.user)
+        return super().disconnect(close_code)
 
-    async def receive_json(self, text_data):
-        # username = self.scope["user"].username
-        type = text_data.get("type")
+    def get_receiver(self):
+        receiver = self.conversation.members.exclude(pk=self.user.pk)
+
+        if receiver:
+            return receiver.first()
+        else:
+            raise ObjectDoesNotExist("No user found.")
+
+        # self.conversation.members.all(User!=self.user.username)
+
+    def receive_json(self, content):
+        type = content["type"]
+        print(f"Greeting from {self.user.username}")
 
         if type == "greeting":
             # Send reply of greeting
-            await self.channel_layer.group_send(
-                self.conversation_name,
-                {"type": "greeting_reply", "message": "Hey How you doing!"},
+            self.send_json(
+                {
+                    "type": "greeting_message",
+                    "message": "Hey How you doing!",
+                }
             )
 
-        elif type == "message":
-            message_text = text_data.get("message")
-            username = text_data.get("username")
+        if type == "chat_message":
+            message_text = content.get("message")
 
             message = Message.objects.create(
                 from_user=self.user,
@@ -131,29 +125,25 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 conversation=self.conversation,
             )
 
-            await self.channel_layer.group_send(
-                self.conversation_name,
-                {
-                    "type": "chat_message_echo",
-                    "name": self.user.username,
-                    "message": MessageSerializer(message).data,
-                },
+            async_to_sync(
+                self.channel_layer.group_send(
+                    self.conversation_name,
+                    {
+                        "type": "chat_message_echo",
+                        "name": self.user.username,
+                        "message": MessageSerializer(message),
+                    },
+                )
             )
 
-            # Send message to room group
-            await self.channel_layer.group_send(
-                self.conversation_name,
-                {"type": "message", "message": message_text, "username": username},
-            )
+    def greeting_message(self, event):
+        # Send message to WebSocket
+        self.send_json(event)
 
     # Receive message from room group
-    async def message(self, event):
+    def chat_message_echo(self, event):
         # Send message to WebSocket
-        await self.send_json(event)
-
-    async def greeting_message(self, event):
-        # Send message to WebSocket
-        await self.send_json(event)
+        self.send_json(event)
 
     @classmethod
     def encode_json(cls, content):

@@ -6,18 +6,20 @@ import uuid
 class Conversation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128)
-    online = models.ManyToManyField(to=User, blank=True)
+    online_users = models.ManyToManyField(to=User, blank=True, related_name="Users_online")
+    members = models.ManyToManyField(to=User, blank=True, related_name="Convo_members")
 
     def get_online_count(self):
-        return self.online.count()
+        return self.online_users.count()
 
     def join(self, user):
-        self.online.add(user)
-        self.save()
+        self.online_users.add(user)
+        
+    def add_member(self, user):
+        self.members.add(user)
 
     def leave(self, user):
-        self.online.remove(user)
-        self.save()
+        self.online_users.remove(user)
 
     def __str__(self) -> str:
         return f"{self.name} ({str(self.get_online_count())})"

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // Styling
 import "../styling/ChatPage.css";
@@ -19,53 +20,51 @@ const ChatPage: React.FC = () => {
   const [messageHistory, setMessageHistory] = useState<MessageType[]>([]);
   const [welcomeMessage, setWelcomeMessage] = useState<string>("");
 
-  const { username, authTokens } = useContext(AuthContext);
+  const { authTokens } = useContext(AuthContext);
 
-  const { sendJsonMessage } = useWebSocket(
-    authTokens ? `ws://127.0.0.1:8000/chat/${roomname}/` : null
-  );
+  const navigate = useNavigate();
 
   const send_message = () => {
-    setMessage("");
-    sendJsonMessage({
-      type: "message",
+    const messageData = {
+      type: "chat_message",
       message: message,
-      username: username,
-    });
+    };
+    sendJsonMessage(messageData);
+    setMessage("");
   };
 
-  const { readyState } = useWebSocket(
-    authTokens ? `ws://127.0.0.1:8000/chat/${roomname}/` : null,
-    {
-      queryParams: {
-        token: authTokens ? authTokens.access : "",
-      },
-      onOpen: () => {
-        console.log("Connected!");
-      },
-      onClose: () => {
-        console.log("Disconnected!");
-      },
+  const { readyState,sendJsonMessage } = useWebSocket(`ws://0.0.0.0:8000/chat/${roomname}/`, {
+    queryParams: {
+      token: authTokens ? authTokens.access : "",
+    },
+    onOpen: () => {
+      console.log("Connected!");
+    },
+    onClose: () => {
+      console.log("Disconnected!");
+      navigate("/");
+    },
 
-      onMessage: (e) => {
-        const data = JSON.parse(e.data);
-        switch (data.type) {
-          case "welcome_message":
-            setWelcomeMessage(data.message);
-            break;
-          case "message":
-            setMessageHistory((prev: any) => prev.concat(data));
-            break;
-          case "greeting_reply":
-            console.log(data);
-            break;
-          default:
-            console.log("Unknown message type!");
-            break;
-        }
-      },
-    }
-  );
+    onMessage: (e) => {
+      const data = JSON.parse(e.data);
+      console.log(data)
+      switch (data.type) {
+        case "welcome_message":
+          setWelcomeMessage(data.message);
+          break;
+        case "message":
+          setMessageHistory((prev: any) => prev.concat(data));
+          break;
+        case "greeting_reply":
+          console.log(data);
+          break;
+        default:
+          console.log("Unknown message type!");
+          console.log(data);
+          break;
+      }
+    },
+  });
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: "Connecting",
@@ -117,8 +116,8 @@ const ChatPage: React.FC = () => {
         <input
           type="text"
           name="message"
-          onChange={(e) => setMessage(e.target.value)}
           value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Enter the Message"
         />
         <button onClick={() => send_message()}>Send</button>

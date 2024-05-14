@@ -29,8 +29,7 @@ SECRET_KEY = "django-insecure-iumvjk5a7er$ig0()tj0rx$)azv02v1^dd*u4ijw=n1w(_5+_e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ["*", "127.0.0.1"]
 
 # Application definition
 
@@ -97,8 +96,7 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
     "USER_AUTHENTICATION_RULE": (
-        "rest_framework_simplejwt.authentication."
-        "default_user_authentication_rule"
+        "rest_framework_simplejwt.authentication." "default_user_authentication_rule"
     ),
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
@@ -153,10 +151,15 @@ DATABASES = {
 }
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('redis', 6379,)],  # Use the service name 'redis'
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                (
+                    "redis",
+                    6379,
+                )
+            ],  # Use the service name 'redis'
         },
     },
 }
