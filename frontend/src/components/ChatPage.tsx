@@ -8,9 +8,17 @@ import "../styling/ChatPage.css";
 import { AuthContext } from "../context/AuthContext";
 
 interface MessageType {
-  type: string;
-  username: string;
-  message: string;
+  content: string;
+  conversation: string;
+  from_user: {
+    username: string;
+  };
+  id: string;
+  read: boolean;
+  timestamp: string;
+  to_user: {
+    username: string;
+  };
 }
 
 const ChatPage: React.FC = () => {
@@ -33,38 +41,44 @@ const ChatPage: React.FC = () => {
     setMessage("");
   };
 
-  const { readyState,sendJsonMessage } = useWebSocket(`ws://0.0.0.0:8000/chat/${roomname}/`, {
-    queryParams: {
-      token: authTokens ? authTokens.access : "",
-    },
-    onOpen: () => {
-      console.log("Connected!");
-    },
-    onClose: () => {
-      console.log("Disconnected!");
-      navigate("/");
-    },
+  const { readyState, sendJsonMessage } = useWebSocket(
+    `ws://0.0.0.0:8000/chat/${roomname}/`,
+    {
+      queryParams: {
+        token: authTokens ? authTokens.access : "",
+      },
+      onOpen: () => {
+        console.log("Connected!");
+      },
+      onClose: () => {
+        console.log("Disconnected!");
+        navigate("/");
+      },
 
-    onMessage: (e) => {
-      const data = JSON.parse(e.data);
-      console.log(data)
-      switch (data.type) {
-        case "welcome_message":
-          setWelcomeMessage(data.message);
-          break;
-        case "message":
-          setMessageHistory((prev: any) => prev.concat(data));
-          break;
-        case "greeting_reply":
-          console.log(data);
-          break;
-        default:
-          console.log("Unknown message type!");
-          console.log(data);
-          break;
-      }
-    },
-  });
+      onMessage: (e) => {
+        const data = JSON.parse(e.data);
+        console.log(data);
+        switch (data.type) {
+          case "welcome_message":
+            setWelcomeMessage(data.message);
+            break;
+          case "chat_message_echo":
+            setMessageHistory((prev: any) => prev.concat(data.message));
+            break;
+          case "greeting_reply":
+            console.log(data);
+            break;
+          case "last_50_messages":
+            setMessageHistory(data.messages);
+            break;
+          default:
+            console.log("Unknown message type!");
+            console.log(data);
+            break;
+        }
+      },
+    }
+  );
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: "Connecting",
@@ -104,10 +118,10 @@ const ChatPage: React.FC = () => {
       {/* Text Messages */}
 
       <div className="message_history">
-        {messageHistory.map((item, index: number) => (
-          <div className="message_history-box" key={index}>
-            <p>{item.username} :</p>
-            <p>{item.message}</p>
+        {messageHistory.map((item) => (
+          <div className="message_history-box" key={item.id}>
+            <p>{item.from_user.username} :</p>
+            <p>{item.content}</p>
           </div>
         ))}
       </div>

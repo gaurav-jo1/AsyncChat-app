@@ -25,16 +25,18 @@ class ChatConsumer(JsonWebsocketConsumer):
         self.conversation = None
 
     def connect(self):
+        # Authenticate the user
         self.user = self.scope["user"]
-        print(f"Self User: {self.user}")
 
+        # Reject connection for anonymous users
         if isinstance(self.user, AnonymousUser):
-            # Reject connection for anonymous users
             self.close()
             return
 
+        # Accept the connection
         self.accept()
 
+        # Send a welcome message to the client
         self.send_json(
             {
                 "type": "welcome_message",
@@ -42,32 +44,36 @@ class ChatConsumer(JsonWebsocketConsumer):
             }
         )
 
+        # Extract the conversation name from the URL route
         self.conversation_name = (
             f"{self.scope['url_route']['kwargs']['conversation_name']}"
         )
 
+        # Get or create the conversation object
         self.conversation, created = Conversation.objects.get_or_create(
             name=self.conversation_name
         )
 
+        # Add the connection to the conversation group
         self.channel_layer.group_add(self.conversation_name, self.channel_name)
 
+        # Add the connection to the conversation group asynchronously
         async_to_sync(self.channel_layer.group_add)(
             self.conversation_name,
             self.channel_name,
         )
 
-        # Adding User as a Member
+        # Add the user as a member of the conversation
         self.conversation.add_member(self.user)
 
-        # Making User Online
+        # Mark the user as online in the conversation
         self.conversation.join(self.user)
 
-        messages = self.conversation.messages.all().order_by("-timestamp")[0:10]
+        # Fetch the last 10 messages from the conversation
+        messages = self.conversation.messages.all().order_by("timestamp")[0:10]
         message_count = self.conversation.messages.all().count()
 
-        print(f"Message Count {message_count}")
-
+        # Send the last 10 messages to the client
         self.send_json(
             {
                 "type": "last_50_messages",
@@ -103,10 +109,9 @@ class ChatConsumer(JsonWebsocketConsumer):
         # self.conversation.members.all(User!=self.user.username)
 
     def receive_json(self, content):
-        type = content["type"]
-        print(f"Greeting from {self.user.username}")
+        message_type = content["type"]
 
-        if type == "greeting":
+        if message_type == "greeting":
             # Send reply of greeting
             self.send_json(
                 {
@@ -115,7 +120,7 @@ class ChatConsumer(JsonWebsocketConsumer):
                 }
             )
 
-        if type == "chat_message":
+        if message_type == "chat_message":
             message_text = content.get("message")
 
             message = Message.objects.create(
@@ -125,23 +130,24 @@ class ChatConsumer(JsonWebsocketConsumer):
                 conversation=self.conversation,
             )
 
-            async_to_sync(
-                self.channel_layer.group_send(
-                    self.conversation_name,
-                    {
-                        "type": "chat_message_echo",
-                        "name": self.user.username,
-                        "message": MessageSerializer(message),
-                    },
-                )
-            )
+            serialized_message = MessageSerializer(message).data
 
-    def greeting_message(self, event):
-        # Send message to WebSocket
-        self.send_json(event)
+            print(f"serialized_message: {serialized_message}")
+
+            async_to_sync(self.channel_layer.group_send)(
+                self.conversation_name,
+                {
+                    "type": "chat_message_echo",
+                    "message": serialized_message,
+                },
+            )
 
     # Receive message from room group
     def chat_message_echo(self, event):
+        # Send message to WebSocket
+        self.send_json(event)
+
+    def greeting_message(self, event):
         # Send message to WebSocket
         self.send_json(event)
 
