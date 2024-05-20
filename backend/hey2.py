@@ -34,19 +34,16 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             self.close()
             return
 
-
         # Accept the connection
         await self.accept()
 
         # Send a welcome message
         await self.send_json(
-            {
+            content={
                 "type": "welcome_message",
                 "message": "Welcome to the Websocket Connection",
             }
         )
-
-        print(f"The welcome message has been sent.")
 
         # Extract the conversation name from the URL route
         self.conversation_name = (

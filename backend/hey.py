@@ -1,93 +1,156 @@
-from urllib.parse import parse_qs
-from channels.db import database_sync_to_async
-
-from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _
-from rest_framework.exceptions import AuthenticationFailed
-
-User = get_user_model()
-
-
-class TokenAuthentication:
-    """
-    Simple token based authentication.
-
-    Clients should authenticate by passing the token key in the query parameters.
-    For example:
-
-        ?token=401f7ac837da42b97f613d789819ff93537bee6a
-    """
-
-    model = None
-
-    def get_model(self):
-        if self.model is not None:
-            return self.model
-        from rest_framework.authtoken.models import Token
-
-        return Token
-
-    """
-    A custom token model may be used, but must have the following properties.
-
-    * key -- The string identifying the token
-    * user -- The user to which the token belongs
-    """
-
-    def authenticate_credentials(self, key):
-        model = self.get_model()
-        try:
-            token = model.objects.select_related("user").get(key=key)
-        except model.DoesNotExist:
-            raise AuthenticationFailed(_("Invalid token."))
-
-        if not token.user.is_active:
-            raise AuthenticationFailed(_("User inactive or deleted."))
-
-        return token.user
+import json
+from uuid import UUID
+from django.contrib.auth.models import AnonymousUser
+from channels.generic.websocket import JsonWebsocketConsumer
+from chats.models import Message, Conversation
+from chats.serializers import MessageSerializer
+from asgiref.sync import async_to_sync
+from django.core.exceptions import ObjectDoesNotExist
 
 
-@database_sync_to_async
-def get_user(scope):
-    """
-    Return the user model instance associated with the given scope.
-    If no user is retrieved, return an instance of `AnonymousUser`.
-    """
-    # postpone model import to avoid ImproperlyConfigured error before Django
-    # setup is complete.
-    from django.contrib.auth.models import AnonymousUser
+class UUIDEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, UUID):
+            return obj.hex
 
-    if "token" not in scope:
-        raise ValueError(
-            "Cannot find token in scope. You should wrap your consumer in "
-            "TokenAuthMiddleware."
+        return json.JSONEncoder.default(self, obj)
+
+
+class ChatConsumer(JsonWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.user = None
+        self.conversation_name = None
+        self.conversation = None
+
+    def connect(self):
+        # Authenticate the user
+        self.user = self.scope["user"]
+
+        # Reject connection for anonymous users
+        if isinstance(self.user, AnonymousUser):
+            self.close()
+            return
+
+        # Accept the connection
+        self.accept()
+
+        # Send a welcome message to the client
+        self.send_json(
+            {
+                "type": "welcome_message",
+                "message": "Welcome to the Gaurav Websocket Connection",
+            }
         )
-    token = scope["token"]
-    user = None
-    try:
-        auth = TokenAuthentication()
-        user = auth.authenticate_credentials(token)
-    except AuthenticationFailed:
-        pass
-    return user or AnonymousUser()
 
+        # Extract the conversation name from the URL route
+        self.conversation_name = (
+            f"{self.scope['url_route']['kwargs']['conversation_name']}"
+        )
 
-class TokenAuthMiddleware:
-    """
-    Custom middleware that takes a token from the query string and authenticates via
-    Django Rest Framework authtoken.
-    """
+        # Get or create the conversation object
+        self.conversation, created = Conversation.objects.get_or_create(
+            name=self.conversation_name
+        )
 
-    def __init__(self, app):
-        # Store the ASGI application we were passed
-        self.app = app
+        # Add the connection to the conversation group
+        self.channel_layer.group_add(self.conversation_name, self.channel_name)
 
-    async def __call__(self, scope, receive, send):
-        # Look up user from query string (you should also do things like
-        # checking if it is a valid user ID, or if scope["user"] is already
-        # populated).
-        query_params = parse_qs(scope["query_string"].decode())
-        token = query_params["token"][0]
-        scope["token"] = token
-        scope["user"] = await get_user(scope)
-        return await self.app(scope, receive, send)
+        # Add the connection to the conversation group asynchronously
+        async_to_sync(self.channel_layer.group_add)(
+            self.conversation_name,
+            self.channel_name,
+        )
+
+        # Add the user as a member of the conversation
+        self.conversation.add_member(self.user)
+
+        # Mark the user as online in the conversation
+        self.conversation.join(self.user)
+
+        # Fetch the last 10 messages from the conversation
+        messages = self.conversation.messages.all().order_by("timestamp")[0:10]
+        message_count = self.conversation.messages.all().count()
+
+        # Send the last 10 messages to the client
+        self.send_json(
+            {
+                "type": "last_50_messages",
+                "messages": MessageSerializer(messages, many=True).data,
+                "has_more": message_count > 5,
+            }
+        )
+
+    def disconnect(self, close_code):
+        # Leave room group
+
+        if self.user.is_authenticated:
+            # send the leave event to the room
+            self.channel_layer.group_send(
+                self.conversation_name,
+                {
+                    "type": "user_leave",
+                    "user": self.user.username,
+                },
+            )
+
+        self.conversation.leave(self.user)
+        return super().disconnect(close_code)
+
+    def get_receiver(self):
+        receiver = self.conversation.members.exclude(pk=self.user.pk)
+
+        if receiver:
+            return receiver.first()
+        else:
+            raise ObjectDoesNotExist("No user found.")
+
+        # self.conversation.members.all(User!=self.user.username)
+
+    def receive_json(self, content):
+        message_type = content["type"]
+
+        if message_type == "greeting":
+            # Send reply of greeting
+            self.send_json(
+                {
+                    "type": "greeting_message",
+                    "message": "Hey How you doing!",
+                }
+            )
+
+        if message_type == "chat_message":
+            message_text = content.get("message")
+
+            message = Message.objects.create(
+                from_user=self.user,
+                to_user=self.get_receiver(),
+                content=message_text,
+                conversation=self.conversation,
+            )
+
+            serialized_message = MessageSerializer(message).data
+
+            print(f"serialized_message: {serialized_message}")
+
+            async_to_sync(self.channel_layer.group_send)(
+                self.conversation_name,
+                {
+                    "type": "chat_message_echo",
+                    "message": serialized_message,
+                },
+            )
+
+    # Receive message from room group
+    def chat_message_echo(self, event):
+        # Send message to WebSocket
+        self.send_json(event)
+
+    def greeting_message(self, event):
+        # Send message to WebSocket
+        self.send_json(event)
+
+    @classmethod
+    def encode_json(cls, content):
+        return json.dumps(content, cls=UUIDEncoder)
