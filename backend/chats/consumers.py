@@ -9,14 +9,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from channels.db import database_sync_to_async
 
 
-class UUIDEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, UUID):
-            return obj.hex
-
-        return json.JSONEncoder.default(self, obj)
-
-
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,7 +26,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             self.close()
             return
 
-
         # Accept the connection
         await self.accept()
 
@@ -45,8 +36,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 "message": "Welcome to the Websocket Connection",
             }
         )
-
-        print(f"The welcome message has been sent.")
 
         # Extract the conversation name from the URL route
         self.conversation_name = (
@@ -79,31 +68,27 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         )()
 
         if not message_count:
-            async_to_sync(
-                self.send_json(
-                    {
-                        "type": "last_50_messages",
-                        "messages": None,
-                        "has_more": message_count > 5,
-                    }
-                )
+            await self.send_json(
+                {
+                    "type": "last_50_messages",
+                    "messages": None,
+                    "has_more": message_count > 5,
+                }
             )
         else:
             # Send the last 10 messages to the client
-            message_serilaizer = MessageSerializer(messages, many=True).data
-            async_to_sync(
-                self.send_json(
-                    {
-                        "type": "last_50_messages",
-                        "messages": message_serilaizer,
-                        "has_more": message_count > 5,
-                    }
-                )
+            message_serilaizer = await self.serialize_messages(messages)
+            
+            await self.send_json(
+                {
+                    "type": "last_50_messages",
+                    "messages": message_serilaizer,
+                    "has_more": message_count > 5,
+                }
             )
 
     async def disconnect(self, close_code):
         # Leave room group
-
         if self.user.is_authenticated:
             # send the leave event to the room
             await self.channel_layer.group_send(
@@ -114,11 +99,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 },
             )
 
-        await self.conversation.leave(self.user)
+        await sync_to_async(self.conversation.leave)(self.user)
+
         return await super().disconnect(close_code)
 
     async def get_receiver(self):
         receiver = self.conversation.members.exclude(pk=self.user.pk)
+        print(f"Receivers: {receiver}")
 
         if receiver:
             return receiver.first()
@@ -142,23 +129,14 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         if message_type == "chat_message":
             message_text = content.get("message")
 
-            # message = Message.objects.create(
-            #     from_user=self.user,
-            #     to_user=self.get_receiver(),
-            #     content=message_text,
-            #     conversation=self.conversation,
-            # )
-
             message = await database_sync_to_async(Message.objects.create)(
                 from_user=self.user,
-                to_user=self.get_receiver(),
+                to_user=self.user,
                 content=message_text,
                 conversation=self.conversation,
             )
-
-            serialized_message = MessageSerializer(message).data
-
-            # print(f"serialized_message: {serialized_message}")
+            
+            serialized_message = await self.serialize_single_message(message)
 
             await self.channel_layer.group_send(
                 self.conversation_name,
@@ -176,7 +154,14 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def greeting_message(self, event):
         # Send message to WebSocket
         await self.send_json(event)
+        
+    async def user_leave(self, event):
+        await self.send_json(event)
 
-    @classmethod
-    def encode_json(cls, content):
-        return json.dumps(content, cls=UUIDEncoder)
+    @sync_to_async
+    def serialize_messages(self, messages):
+        return MessageSerializer(messages, many=True).data
+    
+    @sync_to_async
+    def serialize_single_message(self, message):
+        return MessageSerializer(message).data

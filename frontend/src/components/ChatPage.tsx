@@ -69,7 +69,9 @@ const ChatPage: React.FC = () => {
             console.log(data);
             break;
           case "last_50_messages":
-            setMessageHistory(data.messages);
+            if (data.messages) {
+              setMessageHistory(data.messages);
+            }
             break;
           default:
             console.log("Unknown message type!");
