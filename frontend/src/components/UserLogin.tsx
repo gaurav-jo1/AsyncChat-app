@@ -3,11 +3,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
+import "../styling/UserLogin.scss"
+
 const UserLogin: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [userLogged, setUserLogged] = useState<boolean>(false);
-  const { setAuthTokens, setUsername } = useContext(AuthContext);
+  const { setAuthTokens } = useContext(AuthContext);
 
   useEffect(() => {
     console.log(userLogged);
@@ -22,22 +24,11 @@ const UserLogin: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = {
-      username: email,
+      username: username,
       password: password,
     };
 
     try {
-      //   const response = await fetch("http://0.0.0.0:8000/api/token/", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify(formData),
-      //   });
-
-      //   const result = await response.json();
-      //   console.log("Success:", result);
-
       const response = await axios.post(
         "http://0.0.0.0:8000/api/token/",
         formData
@@ -54,25 +45,33 @@ const UserLogin: React.FC = () => {
     }
   };
 
-  return (
-    <div>
-      <h1>Login</h1>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="username"
-          name="username"
-          placeholder="Enter Your Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Enter the Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Log In</button>
+return (
+    <div className="login-container">
+      <form onSubmit={handleSubmit} className="login-form">
+        <div className="form-group">
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Login</button>
       </form>
+    
     </div>
   );
 };

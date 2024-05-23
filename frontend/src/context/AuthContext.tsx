@@ -4,8 +4,6 @@ import { AccessTokensInterface } from "../interface/CommonInterface";
 interface CurrentUserContextType {
   authTokens: AccessTokensInterface;
   setAuthTokens: React.Dispatch<React.SetStateAction<AccessTokensInterface>>;
-  username: string;
-  setUsername: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const AuthContext = createContext<CurrentUserContextType>(
@@ -23,16 +21,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       : undefined
   );
 
-  const [username, setUsername] = useState<string>(() =>
-    localStorage.getItem("username")
-      ? JSON.parse(localStorage.getItem("username") || "")
-      : ""
-  );
-
   return (
-    <AuthContext.Provider
-      value={{ authTokens, setAuthTokens, username, setUsername }}
-    >
+    <AuthContext.Provider value={{ authTokens, setAuthTokens }}>
       {children}
     </AuthContext.Provider>
   );

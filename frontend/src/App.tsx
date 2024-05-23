@@ -1,5 +1,4 @@
 import React from "react";
-import HomePage from "./components/HomePage";
 import UserLogin from "./components/UserLogin";
 import ChatPage from "./components/ChatPage";
 
@@ -14,8 +13,7 @@ const App: React.FC = () => {
       <AuthProvider>
         <Routes>
           <Route path="*" element={<Navigate to="/" replace />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<UserLogin />} />
+          <Route path="/" element={<UserLogin />} />
           <Route
             path="/chat/:roomname"
             element={
