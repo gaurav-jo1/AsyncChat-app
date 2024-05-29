@@ -36,7 +36,6 @@ const UserLogin: React.FC = () => {
 
       console.log("Success:", response.data);
       setAuthTokens(response.data.tokens);
-      setUsername(response.data.username);
       localStorage.setItem("authTokens", JSON.stringify(response.data.tokens));
       localStorage.setItem("username", JSON.stringify(response.data.username));
       setUserLogged(true);
@@ -44,7 +43,6 @@ const UserLogin: React.FC = () => {
       console.error("Error:", error);
     }
   };
-
 
 return (
     <div className="login-container">

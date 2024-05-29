@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "api",
     "chats",
     "user_login",
+    "user_profile",
 ]
 
 MIDDLEWARE = [
@@ -200,6 +201,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+
+# Define the media root directory and URL
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
