@@ -5,7 +5,9 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import chat_background from "../assets/wallpaper-universe.jpg";
 
 import "../styling/HomePage.scss";
-import { SlArrowRight } from "react-icons/sl";
+// import { SlArrowRight } from "react-icons/sl";
+import { RiSendPlane2Fill } from "react-icons/ri";
+
 import { AuthContext } from "../context/AuthContext";
 
 interface UsersType {
@@ -76,7 +78,6 @@ const HomePage: React.FC = () => {
     {
       queryParams: {
         token: authTokens ? authTokens.access : "",
-        
       },
       onOpen: () => {
         console.log("Connected!");
@@ -123,11 +124,10 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     console.log("Welcome Message: ", welcomeMessage);
 
-    console.log("Selected User: ",selectedUser)
-
+    console.log("Selected User: ", selectedUser);
 
     console.log("Connection Status: ", connectionStatus);
-  }, [welcomeMessage, connectionStatus]);
+  }, [welcomeMessage, connectionStatus, selectedUser]);
 
   return (
     <div className="chat-home">
@@ -135,7 +135,9 @@ const HomePage: React.FC = () => {
         {usersList?.map((user, index) => (
           <div
             key={index}
-            className="user"
+            className={`user ${
+              selectedUser?.username == user.username ? "selected" : ""
+            }`}
             onClick={() => handleChatConnection(user)}
           >
             <img src={`http://0.0.0.0:8000${user.avatar}`} alt="User" />
@@ -144,7 +146,11 @@ const HomePage: React.FC = () => {
         ))}
       </div>
       <div className="chat-area">
-        <img src={chat_background} alt="Chat Background" />
+        <img
+          className="chat-area_bg"
+          src={chat_background}
+          alt="Chat Background"
+        />
 
         {selectedUser ? (
           <div className="chat_user-container">
@@ -153,7 +159,10 @@ const HomePage: React.FC = () => {
                 src={`http://0.0.0.0:8000${selectedUser.avatar}`}
                 alt="reciever profile"
               />
-              <p>{selectedUser.username}</p>
+              <div className="chat_user-profile_info">
+                <p>{selectedUser.username}</p>
+                <span>last seen recently</span>
+              </div>
             </div>
             <div className="chat_messageHistory">
               {messageHistory.map((item) => (
@@ -170,7 +179,7 @@ const HomePage: React.FC = () => {
                 onChange={(e) => setMessage(e.target.value)}
               />
               <button onClick={() => send_message()}>
-                <SlArrowRight />
+                <RiSendPlane2Fill />
               </button>
             </div>
           </div>
