@@ -63,6 +63,8 @@
     object-fit: cover;
     filter: blur(2px);
     opacity: 0.9;
+    position: absolute;
+    // z-index: ;
   }
 
   .chat_user-container {
@@ -73,10 +75,7 @@
   .chat_reciever-username {
     display: flex;
     align-items: center;
-    position: absolute;
-    top: 0;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.183);
     backdrop-filter: blur(10px);
     padding: 15px 20px;
 
@@ -90,7 +89,6 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      // align-items: center;
       margin-left: 10px;
 
       p {
@@ -108,13 +106,53 @@
     }
   }
 
+  .chat_messageHistory {
+    top: 10%;
+    width: 100%;
+    overflow: scroll;
+    height: 80vh;
+    z-index: 1;
+    padding: 0 180px;
+
+    .message_history-content_my {
+      display: flex;
+      justify-content: flex-end;
+      margin-left: 450px;
+      p {
+        background-color: #8774e1;
+        padding: 10px 25px;
+        border-radius: 10px;
+        border-bottom-right-radius: 0px;
+        color: white;
+      }
+    }
+
+    .message_history-content_from {
+      display: flex;
+      justify-content: flex-start;
+      margin-right: 450px;
+      p {
+        background-color: #2e2e2e;
+        padding: 10px 25px;
+        border-radius: 10px;
+        border-bottom-left-radius: 0;
+        color: white;
+
+      }
+    }
+  }
+
+  .chat_messageHistory::-webkit-scrollbar {
+    display: none;
+  }
+
   .chat-area_msg {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
     align-items: center;
+    justify-content: center;
+    background: none;
+    width: 100%;
+    z-index: 1;
 
     input[type="text"] {
       width: 500px;
@@ -124,6 +162,7 @@
       outline: none;
       background-color: #212121;
       color: white;
+      overflow: scroll;
     }
 
     button {

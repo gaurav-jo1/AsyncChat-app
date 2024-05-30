@@ -43,7 +43,7 @@ class User_Conversation(models.Model):
 
     def __str__(self):
         return f"Conversation from {self.id}"
-    
+
     def join(self, user):
         self.online_users.add(user)
 
@@ -56,13 +56,18 @@ class User_Conversation(models.Model):
 class Message(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     conversation = models.ForeignKey(
-        Conversation, on_delete=models.CASCADE, related_name="messages", blank=True
+        Conversation,
+        on_delete=models.CASCADE,
+        related_name="messages",
+        blank=True,
+        null=True,
     )
     conversation_user = models.ForeignKey(
         User_Conversation,
         on_delete=models.CASCADE,
         related_name="users_messages",
         blank=True,
+        null=True,
     )
     from_user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="message_from_me"

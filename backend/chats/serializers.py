@@ -12,13 +12,11 @@ class UserSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     from_user = serializers.SerializerMethodField()
     to_user = serializers.SerializerMethodField()
-    conversation = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
         fields = (
             "id",
-            "conversation",
             "from_user",
             "to_user",
             "content",
@@ -28,9 +26,12 @@ class MessageSerializer(serializers.ModelSerializer):
 
     def get_conversation(self, obj):
         return str(obj.conversation.id)
-                                        
+
     def get_from_user(self, obj):
         return UserSerializer(obj.from_user).data
 
     def get_to_user(self, obj):
         return UserSerializer(obj.to_user).data
+
+    def get_user_conversation(self, obj):
+        return str(obj.user_conversation.id)

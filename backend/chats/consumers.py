@@ -103,7 +103,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def get_receiver(self):
         receiver = self.conversation.members.exclude(pk=self.user.pk)
-        print(f"Receivers: {receiver}")
 
         if receiver:
             return receiver.first()
@@ -205,12 +204,18 @@ class UserChatConsumer(AsyncJsonWebsocketConsumer):
         )
 
         try:
-            self.conversation = await database_sync_to_async(
-                User_Conversation.objects.get
-            )(
-                Q(name=f"{self.user}_{self.to_user}")
-                or Q(name=f"{self.to_user}_{self.user}")
-            )
+
+            try:
+
+                self.conversation = await database_sync_to_async(
+                    User_Conversation.objects.get
+                )(name=f"{self.user}_{self.to_user}")
+
+            except User_Conversation.DoesNotExist:
+                self.conversation = await database_sync_to_async(
+                    User_Conversation.objects.get
+                )(name=f"{self.to_user}_{self.user}")
+
         except User_Conversation.DoesNotExist:
             self.conversation = await database_sync_to_async(
                 User_Conversation.objects.create
@@ -238,9 +243,9 @@ class UserChatConsumer(AsyncJsonWebsocketConsumer):
 
             message = await database_sync_to_async(Message.objects.create)(
                 from_user=self.user,
-                to_user=self.user,
+                to_user=self.to_user,
                 content=message_text,
-                conversation=self.conversation,
+                conversation_user=self.conversation,
             )
 
             serialized_message = await self.serialize_single_message(message)

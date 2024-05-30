@@ -1,11 +1,10 @@
 import axios from "axios";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
 import chat_background from "../assets/wallpaper-universe.jpg";
 
 import "../styling/HomePage.scss";
-// import { SlArrowRight } from "react-icons/sl";
 import { RiSendPlane2Fill } from "react-icons/ri";
 
 import { AuthContext } from "../context/AuthContext";
@@ -45,6 +44,8 @@ const HomePage: React.FC = () => {
 
   const { authTokens } = useContext(AuthContext);
 
+  const messageContainerRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     const handleSubmit = async () => {
       try {
@@ -58,7 +59,15 @@ const HomePage: React.FC = () => {
     };
 
     handleSubmit();
+
   }, []);
+
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+    }
+  }, [messageHistory]);
+
 
   const handleChatConnection = (user: UsersType) => {
     setSelectedUser(user);
@@ -94,7 +103,9 @@ const HomePage: React.FC = () => {
             setWelcomeMessage(data.message);
             break;
           case "chat_message_echo":
-            setMessageHistory((prev: any) => prev.concat(data.message));
+            setMessageHistory((prev: MessageType[]) =>
+              prev.concat(data.message)
+            );
             break;
           case "greeting_reply":
             console.log(data);
@@ -164,11 +175,23 @@ const HomePage: React.FC = () => {
                 <span>last seen recently</span>
               </div>
             </div>
-            <div className="chat_messageHistory">
+            <div className="chat_messageHistory" ref={messageContainerRef}>
               {messageHistory.map((item) => (
                 <div className="message_history-box" key={item.id}>
-                  <p>{item.from_user.username} :</p>
-                  <p>{item.content}</p>
+                  {item.from_user.username != selectedUser.username ? (
+                    <div className="message_history-content_my">
+                      <p>{item.content}</p>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {item.from_user.username == selectedUser.username ? (
+                    <div className="message_history-content_from">
+                      <p>{item.content}</p>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               ))}
             </div>
@@ -176,6 +199,7 @@ const HomePage: React.FC = () => {
               <input
                 type="text"
                 placeholder="Message"
+                value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
               <button onClick={() => send_message()}>
