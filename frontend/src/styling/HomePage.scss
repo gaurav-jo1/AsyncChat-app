@@ -78,6 +78,11 @@
     width: 100%;
     backdrop-filter: blur(10px);
     padding: 15px 20px;
+    border-bottom: 1px solid rgba(80, 80, 80, 0.414);
+
+    .chat_userprofile-pic {
+      box-shadow: 0 0 10px 5px #8774e1;
+    }
 
     img {
       width: 50px;
@@ -98,10 +103,15 @@
         margin: 0px;
       }
 
-      span {
+      .chat_user-online {
+        font-size: 14px;
+        margin-top: 2px;
+        color: #8774e1;
+      }
+
+      .chat_user-offline {
         font-size: 14px;
         color: rgb(106, 106, 106);
-        margin-top: 2px;
       }
     }
   }
@@ -137,7 +147,6 @@
         border-radius: 10px;
         border-bottom-left-radius: 0;
         color: white;
-
       }
     }
   }

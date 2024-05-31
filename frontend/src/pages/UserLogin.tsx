@@ -17,6 +17,7 @@ const UserLogin: React.FC = () => {
     if (userLogged) {
       navigate("/");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userLogged]);
 
   const navigate = useNavigate();

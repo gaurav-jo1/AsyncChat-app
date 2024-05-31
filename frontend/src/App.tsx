@@ -1,7 +1,6 @@
 import React from "react";
 import HomePage from "./pages/HomePage";
 import UserLogin from "./pages/UserLogin";
-import ChatPage from "./pages/ChatPage";
 
 import AuthProvider from "./context/AuthContext";
 import { ProtectedRoutes } from "./secure_routes/ProtectedRoutes";

@@ -11,11 +11,12 @@ from .serializers import UserProfileSerializer
 
 # Create your views here.
 class Get_Users(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        users_list = User_profile.objects.all()
-        
+
+        users_list = User_profile.objects.exclude(user=request.user)
+
         # Except the Current User
 
         serializer = UserProfileSerializer(users_list, many=True).data

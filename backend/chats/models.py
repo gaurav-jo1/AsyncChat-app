@@ -41,13 +41,17 @@ class User_Conversation(models.Model):
         to=User, blank=True, related_name="User_online"
     )
 
-    def __str__(self):
-        return f"Conversation from {self.id}"
-
     def join(self, user):
         self.online_users.add(user)
 
-    # Any other methods you need
+    def leave(self, user):
+        self.online_users.remove(user)
+
+    # def get_online_users(self):
+    #     return self.online_users.all()
+
+    def __str__(self):
+        return f"{self.name}"
 
     class Meta:
         unique_together = ("from_user", "to_user")

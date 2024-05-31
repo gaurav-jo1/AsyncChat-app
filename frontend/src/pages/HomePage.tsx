@@ -1,13 +1,15 @@
-import axios from "axios";
 import React, { useState, useEffect, useContext, useRef } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import axios from "axios";
 
 import chat_background from "../assets/wallpaper-universe.jpg";
 
-import "../styling/HomePage.scss";
 import { RiSendPlane2Fill } from "react-icons/ri";
 
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
+import "../styling/HomePage.scss";
 
 interface UsersType {
   users: number;
@@ -38,36 +40,44 @@ interface MessageType {
 const HomePage: React.FC = () => {
   const [usersList, setUsersList] = useState<UsersType[]>();
   const [selectedUser, setSelectedUser] = useState<SelectedUser>();
+  const [userOnline, setUserOnline] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [messageHistory, setMessageHistory] = useState<MessageType[]>([]);
-  const [welcomeMessage, setWelcomeMessage] = useState<string>("");
 
   const { authTokens } = useContext(AuthContext);
 
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const handleSubmit = async () => {
       try {
-        const response = await axios.get("http://0.0.0.0:8000/users/");
+        const response = await axios.get("http://0.0.0.0:8000/users/", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + String(authTokens.access),
+          },
+        });
 
         console.log("Success:", response.data);
         setUsersList(response.data);
       } catch (error) {
+        navigate("/login");
         console.error("Error:", error);
       }
     };
 
     handleSubmit();
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (messageContainerRef.current) {
-      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
     }
   }, [messageHistory]);
-
 
   const handleChatConnection = (user: UsersType) => {
     setSelectedUser(user);
@@ -97,27 +107,32 @@ const HomePage: React.FC = () => {
 
       onMessage: (e) => {
         const data = JSON.parse(e.data);
-        console.log(data);
         switch (data.type) {
           case "welcome_message":
-            setWelcomeMessage(data.message);
             break;
           case "chat_message_echo":
             setMessageHistory((prev: MessageType[]) =>
               prev.concat(data.message)
             );
             break;
-          case "greeting_reply":
-            console.log(data);
-            break;
           case "last_50_messages":
             if (data.messages) {
               setMessageHistory(data.messages);
             }
             break;
+
+          case "user_online_status":
+            setUserOnline(false);
+            for (let i = 0; i < data.users.length; i++) {
+              if (data.users[i].username === selectedUser?.username) {
+                setUserOnline(true);
+                break; // Exit the loop once a match is found
+              }
+            }
+
+            break;
           default:
-            console.log("Unknown message type!");
-            console.log(data);
+            console.log("Unknown message type!", data);
             break;
         }
       },
@@ -133,12 +148,8 @@ const HomePage: React.FC = () => {
   }[readyState];
 
   useEffect(() => {
-    console.log("Welcome Message: ", welcomeMessage);
-
-    console.log("Selected User: ", selectedUser);
-
     console.log("Connection Status: ", connectionStatus);
-  }, [welcomeMessage, connectionStatus, selectedUser]);
+  }, [connectionStatus, userOnline]);
 
   return (
     <div className="chat-home">
@@ -167,12 +178,17 @@ const HomePage: React.FC = () => {
           <div className="chat_user-container">
             <div className="chat_reciever-username">
               <img
+                className={userOnline ? "chat_userprofile-pic" : ""}
                 src={`http://0.0.0.0:8000${selectedUser.avatar}`}
                 alt="reciever profile"
               />
               <div className="chat_user-profile_info">
                 <p>{selectedUser.username}</p>
-                <span>last seen recently</span>
+                {userOnline ? (
+                  <span className="chat_user-online">Online</span>
+                ) : (
+                  <span className="chat_user-offline">last seen recently</span>
+                )}
               </div>
             </div>
             <div className="chat_messageHistory" ref={messageContainerRef}>
