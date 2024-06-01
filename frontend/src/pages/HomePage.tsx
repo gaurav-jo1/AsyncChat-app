@@ -151,6 +151,31 @@ const HomePage: React.FC = () => {
     console.log("Connection Status: ", connectionStatus);
   }, [connectionStatus, userOnline]);
 
+  function convertToReadableTime(timestamp: string): string {
+    // Parse the timestamp string into a Date object
+    const date = new Date(timestamp);
+
+    // Extract hours and minutes
+    let hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    
+    // Determine AM or PM
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hours from 24-hour format to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+
+    // Format minutes to always be two digits
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes.toString();
+
+    // Combine hours, minutes, and AM/PM into the final string
+    const readableTime = `${hours}:${minutesStr} ${ampm}`;
+
+    return readableTime;
+}
+
+
   return (
     <div className="chat-home">
       <div className="sidebar">
@@ -197,6 +222,7 @@ const HomePage: React.FC = () => {
                   {item.from_user.username != selectedUser.username ? (
                     <div className="message_history-content_my">
                       <p>{item.content}</p>
+                      <span>{convertToReadableTime(item.timestamp)}</span>
                     </div>
                   ) : (
                     ""
@@ -204,6 +230,7 @@ const HomePage: React.FC = () => {
                   {item.from_user.username == selectedUser.username ? (
                     <div className="message_history-content_from">
                       <p>{item.content}</p>
+                      <span>{convertToReadableTime(item.timestamp)}</span>
                     </div>
                   ) : (
                     ""

@@ -126,27 +126,50 @@
 
     .message_history-content_my {
       display: flex;
+      flex-direction: column;
       justify-content: flex-end;
+      background-color: #8774e1;
       margin-left: 450px;
+      border-radius: 10px;
+      border-bottom-right-radius: 0px;
+      margin-top: 10px;
+      padding: 15px 20px 10px 20px;
+
       p {
-        background-color: #8774e1;
-        padding: 10px 25px;
-        border-radius: 10px;
-        border-bottom-right-radius: 0px;
         color: white;
+        margin: 0px 0px;
+      }
+
+      span {
+        display: flex;
+        align-self: flex-end;
+        color: rgb(209, 209, 209);
+        font-size: 14px;
       }
     }
 
     .message_history-content_from {
       display: flex;
       justify-content: flex-start;
+      flex-direction: column;
       margin-right: 450px;
+      background-color: #2e2e2e;
+      border-radius: 10px;
+      border-bottom-left-radius: 0;
+      margin-top: 10px;
+
+      padding: 15px 20px 10px 20px;
+
       p {
-        background-color: #2e2e2e;
-        padding: 10px 25px;
-        border-radius: 10px;
-        border-bottom-left-radius: 0;
         color: white;
+        margin: 0px 0px;
+      }
+
+      span {
+        display: flex;
+        align-self: flex-end;
+        color: gray;
+        font-size: 14px;
       }
     }
   }
