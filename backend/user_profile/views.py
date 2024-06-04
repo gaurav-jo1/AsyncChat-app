@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
@@ -7,18 +6,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from user_profile.models import User_profile
 from .serializers import UserProfileSerializer
-
-
 # Create your views here.
 class Get_Users(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
-
+        # users_list = User_profile.objects.exclude(user=request.user)
         users_list = User_profile.objects.exclude(user=request.user)
 
         # Except the Current User
-
         serializer = UserProfileSerializer(users_list, many=True).data
 
         return Response(

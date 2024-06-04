@@ -6,7 +6,7 @@ User = get_user_model()
 
 class User_profile(models.Model):
     user = models.ForeignKey(User, blank=False, null=False, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatars/')
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, default=None)
 
     def __str__(self):
             return self.user.username

@@ -232,26 +232,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             lambda: self.conversation.messages.all().count()
         )()
 
-        # if not message_count:
-        #     await self.send_json(
-        #         {
-        #             "type": "last_50_messages",
-        #             "messages": None,
-        #             "has_more": message_count > 5,
-        #         }
-        #     )
-        # else:
-        #     # Send the last 10 messages to the client
-        #     message_serilaizer = await self.serialize_messages(messages)
-
-        #     await self.send_json(
-        #         {
-        #             "type": "last_50_messages",
-        #             "messages": message_serilaizer,
-        #             "has_more": message_count > 5,
-        #         }
-        #     )
-
     async def disconnect(self, close_code):
         # Leave room group
         if self.user.is_authenticated:
