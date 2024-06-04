@@ -14,6 +14,7 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -133,12 +134,9 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
+
+# Production settings with PostgreSQL
+
 
 DATABASES = {
     "default": {
@@ -148,7 +146,7 @@ DATABASES = {
         "PASSWORD": os.getenv("PG_PASSWORD"),
         "HOST": os.getenv("PG_HOST"),
         "PORT": os.getenv("PG_PORT"),
-    }
+    },
 }
 
 CHANNEL_LAYERS = {
@@ -203,8 +201,8 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 # Define the media root directory and URL
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 # Default primary key field type
