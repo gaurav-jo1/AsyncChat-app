@@ -33,7 +33,7 @@ class UserLoginView(APIView):
                     user = None
             else:
                 return Response(
-                    {"error": "Missing credentials"}, status=status.HTTP_400_BAD_REQUEST
+                    {"error": "Missing credentials"}, status=status.HTTP_401_UNAUTHORIZED
                 )
 
             # Check if user is authenticated and generate tokens
@@ -46,7 +46,7 @@ class UserLoginView(APIView):
                 )
             else:
                 return Response(
-                    {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
+                    {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
                 )
         except Exception as e:
             return Response(
