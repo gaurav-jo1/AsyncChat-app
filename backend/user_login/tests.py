@@ -3,10 +3,11 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 @pytest.mark.django_db
-def test_user_login():
+def test_user_login(client):
     user_model = get_user_model()
 
     # Create a user with username, email, and password
@@ -15,7 +16,6 @@ def test_user_login():
     )
     assert user.username == "user1"
 
-    client = APIClient()
     url = reverse("token_obtain_pair")
 
     # Test with valid username and password
@@ -55,3 +55,18 @@ def test_user_login():
     response = client.post(url, data, format="json")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Invalid credentials" in response.data["error"]
+
+@pytest.fixture
+def refresh_token(user):
+    refresh = RefreshToken.for_user(user)
+    return str(refresh)
+
+def test_token_refresh(client, refresh_token):
+    url = reverse("token_refresh")
+    data = {"refresh": refresh_token}
+
+    response = client.post(url, data, format="json")
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "access" in response.data
+    assert "refresh" in response.data
