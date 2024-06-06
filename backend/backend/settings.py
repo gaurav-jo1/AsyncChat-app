@@ -146,6 +146,9 @@ DATABASES = {
         "PASSWORD": os.getenv("PG_PASSWORD"),
         "HOST": os.getenv("PG_HOST"),
         "PORT": os.getenv("PG_PORT"),
+        "TEST": {
+            "NAME": os.path.join(BASE_DIR, "db_test.sqlite3"),
+        },
     },
 }
 

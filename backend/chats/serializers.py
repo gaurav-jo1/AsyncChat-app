@@ -8,7 +8,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["username"]
 
-
 class MessageSerializer(serializers.ModelSerializer):
     from_user = serializers.SerializerMethodField()
     to_user = serializers.SerializerMethodField()

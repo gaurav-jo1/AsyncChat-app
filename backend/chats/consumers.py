@@ -5,10 +5,7 @@ from chats.serializers import MessageSerializer, UserSerializer
 from asgiref.sync import sync_to_async
 from django.core.exceptions import ObjectDoesNotExist
 from channels.db import database_sync_to_async
-
 from django.contrib.auth.models import User
-
-from django.forms.models import model_to_dict
 
 
 class UserChatConsumer(AsyncJsonWebsocketConsumer):
@@ -50,7 +47,6 @@ class UserChatConsumer(AsyncJsonWebsocketConsumer):
             await self.close(code=4001)
 
         try:
-
             try:
 
                 self.conversation = await database_sync_to_async(
@@ -99,7 +95,7 @@ class UserChatConsumer(AsyncJsonWebsocketConsumer):
 
         # Send the last 10 messages to the client
         message_serilaizer = await self.serialize_messages(messages)
-
+        
         await self.send_json(
             {
                 "type": "last_50_messages",

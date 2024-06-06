@@ -45,7 +45,7 @@ const ChatPage: React.FC = () => {
     `ws://0.0.0.0:8000/chat/${roomname}/`,
     {
       queryParams: {
-        token: authTokens ? authTokens.access : "",
+        token: authTokens ? authTokens.access : undefined,
       },
       onOpen: () => {
         console.log("Connected!");

@@ -61,11 +61,11 @@ class JWTAuthMiddleware:
 @database_sync_to_async
 def get_user(scope):
     token = scope["token"]
-
+    
     access_token = AccessToken(token)
-
+    
     user_id = access_token.payload.get("user_id")
-
+    
     user = User.objects.get(id=user_id)
-
+    
     return user or AnonymousUser()

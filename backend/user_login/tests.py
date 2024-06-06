@@ -56,11 +56,6 @@ def test_user_login(client):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "Invalid credentials" in response.data["error"]
 
-@pytest.fixture
-def refresh_token(user):
-    refresh = RefreshToken.for_user(user)
-    return str(refresh)
-
 def test_token_refresh(client, refresh_token):
     url = reverse("token_refresh")
     data = {"refresh": refresh_token}
