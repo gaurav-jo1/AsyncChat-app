@@ -95,7 +95,7 @@ class UserChatConsumer(AsyncJsonWebsocketConsumer):
 
         # Send the last 10 messages to the client
         message_serilaizer = await self.serialize_messages(messages)
-        
+
         await self.send_json(
             {
                 "type": "last_50_messages",
