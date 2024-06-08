@@ -44,7 +44,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Set Django Settings Module
-        run: export DJANGO_SETTINGS_MODULE=<your_project>.settings
+        run: export DJANGO_SETTINGS_MODULE=backend.settings
 
       - name: Install Dependencies
         working-directory: ./backend
