@@ -43,9 +43,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set Django Settings Module
-        run: export DJANGO_SETTINGS_MODULE=backend.settings
-
       - name: Install Dependencies
         working-directory: ./backend
         run: |
@@ -54,4 +51,5 @@ jobs:
           pip install -r requirements.txt
 
       - name: Tests
+        working-directory: ./backend
         run: pytest
