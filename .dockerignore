@@ -1,0 +1,43 @@
+# Backend
+*.pyc
+*.pyo
+__pycache__
+*.pyd
+
+# Ignore backend-specific files and directories
+backend/venv
+# backend/.env
+backend/LICENSE
+backend/README.md
+
+.git
+node_modules
+*.pyc
+*.pyo
+__pycache__
+
+
+# Ignore Node.js specific files
+package-lock.json
+yarn.lock
+
+# Ignore frontend build artifacts
+/build
+/dist
+
+# Ignore editor-specific files
+.vscode
+.idea
+
+# Ignore test files
+__tests__
+*.test.js
+*.test.ts
+*.test.tsx
+
+# Ignore Docker-related files
+Dockerfile
+
+# Ignore miscellaneous files
+*.log
+.DS_Store

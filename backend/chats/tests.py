@@ -113,12 +113,14 @@ async def test_chats_consumer_second(access_token_testuser, user, test_user):
 
     # Check the format and content of the last 50 messages
     assert last_messages_json["type"] == "last_50_messages"
-        
-    assert last_messages_json['messages'][0]["from_user"]["username"] == test_user.username
-    assert last_messages_json['messages'][0]["to_user"]["username"] == user.username
-    assert last_messages_json['messages'][0]["content"] == msg_content
-    assert last_messages_json['messages'][0]["read"] == False
-    
+
+    assert (
+        last_messages_json["messages"][0]["from_user"]["username"] == test_user.username
+    )
+    assert last_messages_json["messages"][0]["to_user"]["username"] == user.username
+    assert last_messages_json["messages"][0]["content"] == msg_content
+    assert last_messages_json["messages"][0]["read"] == False
+
     # Receive and check the broadcasted chat message
     response = await websocket_communicator.receive_from()
     response_json = json.loads(response)

@@ -3,7 +3,6 @@
 
 # Ignore Docker related files
 docker-compose.override.yml
-.dockerignore
 
 # Ignore PostgreSQL data directory
 /database/*.txt
@@ -45,3 +44,8 @@ db.sqlite3
 # Ignore macOS metadata
 ._*
 .DS_Store
+# Ignore all files in migration directories
+**/migrations/*
+
+# But do not ignore __init__.py
+!**/migrations/__init__.py
