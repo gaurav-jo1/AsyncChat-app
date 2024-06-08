@@ -140,7 +140,7 @@ CHANNEL_LAYERS = {
                     "redis",
                     6379,
                 )
-            ],  # Use the service name 'redis'
+            ],
         },
     },
 }

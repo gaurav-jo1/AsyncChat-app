@@ -1,7 +1,5 @@
-# myapp/tests.py
 import pytest
 from django.contrib.auth.models import User
-import pytest
 from django.test import RequestFactory
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,7 +9,7 @@ from api.models import ProgrammingLanguages
 
 
 # GET
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_languages_list_get_request():
     languages_arr = ["Python", "JavaScript", "Java", "Rust", "Ruby"]
 
@@ -31,7 +29,7 @@ def test_languages_list_get_request():
 
 
 # POST
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_languages_list_no_content():
     # Create a request instance
 
@@ -51,7 +49,7 @@ def test_languages_list_no_content():
 from api.views import languages_class_list
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_languages_class_list_get():
     # Create some languages for testing
     ProgrammingLanguages.objects.create(language_name="Python")
@@ -71,7 +69,7 @@ def test_languages_class_list_get():
     assert len(response.data["languages"]) == 2
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_languages_class_list_post_created():
     # Create a POST request instance with a new language
     factory = APIRequestFactory()
@@ -87,7 +85,7 @@ def test_languages_class_list_post_created():
     assert ProgrammingLanguages.objects.filter(language_name="Java").exists()
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_languages_class_list_post_exists():
     # Create a language in the database
     ProgrammingLanguages.objects.create(language_name="Java")
@@ -106,7 +104,7 @@ def test_languages_class_list_post_exists():
     assert "language already exist" in response.data["message"]
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_languages_class_list_post_no_language_provided():
     # Create a POST request instance without providing a language name
     factory = APIRequestFactory()

@@ -6,8 +6,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import AccessToken
 
-
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_get_users():
     user_model = get_user_model()
     usernames = ["test_user", "test_user1", "test_user2", "John"]

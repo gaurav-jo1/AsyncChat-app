@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_user_login(client):
     user_model = get_user_model()
 
