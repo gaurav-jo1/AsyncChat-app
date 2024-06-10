@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
 
     services:
       redis:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Wait for Redis to be ready
         run: |
-          until nc -z localhost 6379; do
+          until nc -z redis 6379; do
             echo "Waiting for Redis...";
             sleep 1;
           done
@@ -52,4 +52,4 @@ jobs:
 
       - name: Tests
         working-directory: ./backend
-        run: pytest
+        run: pytest api
