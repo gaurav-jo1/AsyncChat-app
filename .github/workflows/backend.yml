@@ -40,7 +40,8 @@ jobs:
       - name: Run Migrations
         working-directory: ./backend
         run: |
-          python manage.py migrate
+          python manage.py makemigrations --settings=backend.test_settings
+          python manage.py migrate --settings=backend.test_settings
 
       - name: Tests
         working-directory: ./backend
