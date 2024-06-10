@@ -7,26 +7,29 @@ on:
     branches: ["main"]
 
 jobs:
-  container-job:
+  runner-job:
     strategy:
       max-parallel: 4
       matrix:
         os: [ubuntu-latest]
         python-version: [3.12]
 
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
 
     services:
       redis:
-        image: redis
+        image: redis:latest
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 6379:6379
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
