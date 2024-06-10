@@ -45,4 +45,4 @@ jobs:
 
       - name: Tests
         working-directory: ./backend
-        run: pytest api
+        run: pytest
