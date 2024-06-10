@@ -15,7 +15,6 @@ jobs:
         image: redis
         ports:
           - 6379:6379
-        options: --name redis
 
     strategy:
       max-parallel: 4
