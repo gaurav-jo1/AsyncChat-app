@@ -37,6 +37,13 @@ jobs:
           pip install --upgrade pip setuptools
           pip install -r requirements.txt
 
+      - name: Wait for Redis
+        run: |
+          until nc -zv redis 6379; do
+            echo "Waiting for Redis...";
+            sleep 1;
+          done
+
       - name: Run Migrations
         working-directory: ./backend
         run: |
