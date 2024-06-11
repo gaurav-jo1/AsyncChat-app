@@ -29,7 +29,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   function callLogout() {
-    setAuthTokens({ access: undefined, refresh: undefined });
+    setAuthTokens({ access: "", refresh: "" });
     localStorage.removeItem("authTokens");
   }
 

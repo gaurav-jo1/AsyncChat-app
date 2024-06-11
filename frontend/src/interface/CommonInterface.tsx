@@ -1,4 +1,4 @@
 export interface AccessTokensInterface {
-  access: string | undefined;
-  refresh: string | undefined;
+  access: string ;
+  refresh: string ;
 }
