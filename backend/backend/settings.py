@@ -141,11 +141,11 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("PG_DB"),
-        "USER": os.getenv("PG_USER"),
-        "PASSWORD": os.getenv("PG_PASSWORD"),
-        "HOST": os.getenv("PG_HOST"),
-        "PORT": os.getenv("PG_PORT"),
+        "NAME": os.getenv("PG_DB", "postgres"),
+        "USER": os.getenv("PG_USER", "postgres"),
+        "PASSWORD": os.getenv("PG_PASSWORD", "postgres"),
+        "HOST": os.getenv("PG_HOST", "db"),
+        "PORT": os.getenv("PG_PORT", 5432),
         "TEST": {
             "NAME": os.path.join(BASE_DIR, "db_test.sqlite3"),
         },
