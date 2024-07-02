@@ -17,20 +17,42 @@ AsyncChat-App is a portfolio project designed to demonstrate the capabilities of
 **Testing:** 🧪 Pytest is implemented for rigorous backend testing, ensuring code quality and reliability throughout development cycles.
 
 ## Getting Started 🔥
+
 To get started with the project, follow these steps:
 
-1. Clone the repository to your local machine using the following command:
-```
-git clone https://github.com/gaurav-jo1/AsyncChat-app
-```
+1. **Clone the repository to your local machine:**
+   ```sh
+   git clone https://github.com/gaurav-jo1/AsyncChat-app
+   ```
 
-2. Navigate to the project directory:
-```
-cd AsyncChat-app
-```
+3. **Navigate to the project directory:**
+   ```sh
+   cd AsyncChat-app
+   ```
 
-3. Inside the **frontend** directory Install the project dependencies using the following command:
-```
-npm install
-```
+4. **Install frontend dependencies:**
+   ```sh
+   cd frontend && npm install
+   ```
 
+5. **Set up the backend environment (optional for development):**
+   - Create a virtual environment:
+     ```sh
+     cd backend && virtualenv venv
+     ```
+   - Activate the virtual environment and install dependencies:
+     ```sh
+     source ./venv/bin/activate && pip install -r requirements.txt
+     ```
+
+6. **Set up the database configuration:**
+   - Navigate to the database directory and create the `postgres_auth.txt` file:
+     ```sh
+     echo "postgres" > postgres_auth.txt
+     ```
+
+7. **Run the application:**
+   - Navigate to the root directory and start the services with Docker:
+     ```sh
+     docker-compose up
+     ```
