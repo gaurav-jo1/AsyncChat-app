@@ -1,10 +1,17 @@
-# Async Python Infrastructure
+# AsyncChat-App
 
-This repository aims to provide a flexible and scalable architecture for building asynchronous Python applications. It leverages the power of asynchronous programming to handle concurrent tasks efficiently.
+Welcome to **AsyncChat**, a showcase of modern web development leveraging powerful technologies to deliver seamless live communication experiences.
 
-## Requirements
-Python 3.11+
+## Project Overview:
 
-Node 20.10 +
+AsyncChat-App is a portfolio project designed to demonstrate the capabilities of real-time chat protocols, making it ideal for live communication scenarios. Whether you're looking to integrate chat functionality into your application or explore the efficiency of asynchronous programming, AsyncChat-App provides a robust foundation.
 
-Docker
+## Technologies Used:
+
+**Backend:** 🌐 Built with Python and Django, AsyncChat-App ensures secure and scalable server-side operations. Integration of Redis enhances performance, while PostgreSQL handles data storage efficiently.
+
+**Frontend:** 🎨 Utilizing TypeScript and React, AsyncChat-App offers a dynamic and responsive user interface. SCSS is employed for streamlined styling, ensuring a visually appealing and intuitive user experience.
+
+**Infrastructure:** 🐳 Docker and GitHub Actions are instrumental in automating deployment and continuous integration processes, maintaining project reliability and consistency. AsyncChat-App's architecture is adaptable, suitable for scaling and building infrastructures similar to advanced systems like ChatGPT.
+
+**Testing:** 🧪 Pytest is implemented for rigorous backend testing, ensuring code quality and reliability throughout development cycles.
