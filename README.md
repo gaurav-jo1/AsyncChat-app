@@ -48,11 +48,11 @@ To get started with the project, follow these steps:
 6. **Set up the database configuration:**
    - Navigate to the database directory and create the `postgres_auth.txt` file:
      ```sh
-     echo "postgres" > postgres_auth.txt
+     cd database/ && echo "postgres" > postgres_auth.txt
      ```
 
 7. **Run the application:**
    - Navigate to the root directory and start the services with Docker:
      ```sh
-     docker-compose up
+     docker compose up
      ```
