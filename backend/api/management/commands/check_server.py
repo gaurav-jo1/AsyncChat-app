@@ -2,14 +2,13 @@ from django.core.management.base import BaseCommand
 from django.db import connections
 import time
 
-
 class Command(BaseCommand):
     help = "Starts the Django development server only if the database is available."
 
     def handle(self, *args, **options):
         self.stdout.write("🛸 Checking database availability...")
         db_conn = None
-        max_attempts = 30  # Adjust the number of attempts as needed
+        max_attempts = 10  # Adjust the number of attempts as needed
         attempts = 0
 
         while not db_conn and attempts < max_attempts:

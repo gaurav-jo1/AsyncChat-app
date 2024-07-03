@@ -36,6 +36,14 @@ services:
       - db
       - redis
 
+  frontend:
+    container_name: react_frontend_container
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+
 secrets:
   postgres_auth:
     file: ./database/postgres_auth.txt

@@ -12,14 +12,12 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from datetime import timedelta
-from dotenv import load_dotenv
 from pathlib import Path
-import sys
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -30,7 +28,7 @@ SECRET_KEY = "django-insecure-iumvjk5a7er$ig0()tj0rx$)azv02v1^dd*u4ijw=n1w(_5+_e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -141,16 +139,23 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("PG_DB", "postgres"),
-        "USER": os.getenv("PG_USER", "postgres"),
-        "PASSWORD": os.getenv("PG_PASSWORD", "postgres"),
-        "HOST": os.getenv("PG_HOST", "db"),
-        "PORT": os.getenv("PG_PORT", 5432),
+        "NAME": config("PG_DB", default="postgres"),
+        "USER": config("PG_USER", default="postgres"),
+        "PASSWORD": config("PG_PASSWORD", default="postgres"),
+        "HOST": config("PG_HOST", default="db"),
+        "PORT": config("PG_PORT", default=5432),
         "TEST": {
             "NAME": os.path.join(BASE_DIR, "db_test.sqlite3"),
         },
     },
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 CHANNEL_LAYERS = {
     "default": {

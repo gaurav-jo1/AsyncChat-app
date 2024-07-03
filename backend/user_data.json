@@ -1,0 +1,26 @@
+[
+    {
+        "username": "John",
+        "email": "johndoe@example.com",
+        "first_name": "John",
+        "last_name": "Doe",
+        "password": "securepassword",
+        "avatar": "media/avatar/Designer_3.png"
+    },
+    {
+        "username": "Anya",
+        "email": "anya@example.com",
+        "first_name": "Anya",
+        "last_name": "",
+        "password": "securepassword",
+        "avatar": "media/avatar/Designer_4.png"
+    },
+    {
+        "username": "Danny",
+        "email": "danny@example.com",
+        "first_name": "Danny",
+        "last_name": "",
+        "password": "securepassword",
+        "avatar": "media/avatar/Designer_5.png"
+    }
+]
