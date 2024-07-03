@@ -5,7 +5,7 @@
         "first_name": "John",
         "last_name": "Doe",
         "password": "securepassword",
-        "avatar": "media/avatar/Designer_3.png"
+        "avatar": "avatars/Designer_3.png"
     },
     {
         "username": "Anya",
@@ -13,7 +13,7 @@
         "first_name": "Anya",
         "last_name": "",
         "password": "securepassword",
-        "avatar": "media/avatar/Designer_4.png"
+        "avatar": "avatars/Designer_4.png"
     },
     {
         "username": "Danny",
@@ -21,6 +21,22 @@
         "first_name": "Danny",
         "last_name": "",
         "password": "securepassword",
-        "avatar": "media/avatar/Designer_5.png"
+        "avatar": "avatars/Designer_5.png"
+    },
+    {
+        "username": "Alice",
+        "email": "alice.smith@example.com",
+        "first_name": "Alice",
+        "last_name": "",
+        "password": "securepassword",
+        "avatar": "avatars/Designer_1.png"
+    },
+    {
+        "username": "Bob",
+        "email": "bob.johnson@example.com",
+        "first_name": "Bob",
+        "last_name": "",
+        "password": "securepassword",
+        "avatar": "avatars/Designer_2.png"
     }
 ]
