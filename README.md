@@ -1,10 +1,6 @@
 # AsyncChat-App
 
-Welcome to **AsyncChat**, a showcase of modern web development leveraging powerful technologies to deliver seamless live communication experiences.
-
-## Project Overview:
-
-AsyncChat-App is a portfolio project designed to demonstrate the capabilities of real-time chat protocols, making it ideal for live communication scenarios.
+Welcome to **AsyncChat**, AsyncChat-App is a portfolio project designed to demonstrate the capabilities of real-time chat protocols, making it ideal for live communication scenarios.
 
 ## Technologies Used:
 
