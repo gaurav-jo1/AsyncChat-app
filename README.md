@@ -53,6 +53,11 @@ To get started with the project, follow these steps:
      docker compose up
      ```
 
+# NOTE
+
+Provide User name Id
+and description
+
 Access the application at: 🔗 http://localhost:5173
 
 That's it! You should now be able to get started with the project and use Docker Compose to run the application. If you have any questions or issues, feel free to open an issue on the repository. Thanks for using my project!
