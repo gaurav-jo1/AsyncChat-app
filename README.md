@@ -1,8 +1,8 @@
 # AsyncChat-App
 
-Welcome to **AsyncChat**, AsyncChat-App is a portfolio project designed to demonstrate the capabilities of real-time chat protocols, making it ideal for live communication scenarios.
+Welcome to **AsyncChat**, a portfolio project designed to demonstrate the capabilities of real-time chat protocols, making it ideal for live communication scenarios.
 
-## Technologies Used:
+## Technologies Used
 
 **Backend:** 🌐 Built with Python and Django, AsyncChat-App ensures secure and scalable server-side operations. Integration of Redis enhances performance, while PostgreSQL handles data storage efficiently.
 
@@ -21,17 +21,17 @@ To get started with the project, follow these steps:
    git clone https://github.com/gaurav-jo1/AsyncChat-app
    ```
 
-3. **Navigate to the project directory:**
+2. **Navigate to the project directory:**
    ```sh
    cd AsyncChat-app
    ```
 
-4. **Install frontend dependencies:**
+3. **Install frontend dependencies:**
    ```sh
    cd frontend && npm install
    ```
 
-5. **Set up the backend environment (optional for development):**
+4. **Set up the backend environment (optional for development):**
    - Create a virtual environment:
      ```sh
      cd backend && virtualenv venv
@@ -41,19 +41,19 @@ To get started with the project, follow these steps:
      source ./venv/bin/activate && pip install -r requirements.txt
      ```
 
-6. **Set up the database configuration:**
+5. **Set up the database configuration:**
    - Navigate to the database directory and create the `postgres_auth.txt` file:
      ```sh
      cd database/ && echo "postgres" > postgres_auth.txt
      ```
 
-7. **Run the application:**
+6. **Run the application:**
    - Navigate to the root directory and start the services with Docker:
      ```sh
      docker compose up
      ```
 
-## User Authentication
+## User Authentication 🚀
 
 The following table contains the usernames and passwords for the sample users included in this application. You can use these credentials to log in and test the application.
 
@@ -64,6 +64,10 @@ The following table contains the usernames and passwords for the sample users in
 | Danny    | securepassword  |
 | Alice    | securepassword  |
 | Bob      | securepassword  |
+
+These credentials are meant for testing and demonstration purposes only.
+
+## Access the Application
 
 Access the application at: 🔗 http://localhost:5173
 
