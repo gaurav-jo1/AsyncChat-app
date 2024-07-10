@@ -2,6 +2,11 @@
 
 Welcome to **AsyncChat**, a portfolio project designed to demonstrate the capabilities of real-time chat protocols, making it ideal for live communication scenarios.
 
+![Screenshot from 2024-07-10 09-50-59](https://github.com/gaurav-jo1/AsyncChat-app/assets/93304640/8beea5b0-ae83-4e51-b05e-08da6b084d1c)
+
+![Screenshot from 2024-07-10 09-51-37](https://github.com/gaurav-jo1/AsyncChat-app/assets/93304640/426db404-74a9-4ab5-9a1a-cd87286facd9)
+
+
 ## Technologies Used
 
 **Backend:** 🌐 Built with Python and Django, AsyncChat-App ensures secure and scalable server-side operations. Integration of Redis enhances performance, while PostgreSQL handles data storage efficiently.
