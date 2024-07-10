@@ -1,0 +1,38 @@
+.chatpage_container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.chatpage_main-body {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+}
+close_code
+.chatpage_button {
+    margin-top: 20px;
+}
+
+.chatpage_messages {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.chatpage_messages button {
+    margin-top: 10px;
+}
+
+.message_history {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid black ;
+}
+
+.message_history-box {
+    display: flex;
+}
