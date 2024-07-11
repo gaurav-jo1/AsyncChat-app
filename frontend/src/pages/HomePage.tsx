@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext, useRef, FormEvent } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import axios from "axios";
 
@@ -83,7 +83,8 @@ const HomePage: React.FC = () => {
     setSelectedUser(user);
   };
 
-  const send_message = () => {
+  const send_message = (e: FormEvent) => {
+    e.preventDefault();
     const messageData = {
       type: "chat_message",
       message: message,
@@ -238,17 +239,17 @@ const HomePage: React.FC = () => {
                 </div>
               ))}
             </div>
-            <div className="chat-area_msg">
+            <form onSubmit={(e) => send_message(e)}  className="chat-area_msg">
               <input
                 type="text"
                 placeholder="Message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
-              <button onClick={() => send_message()}>
+              <button type="submit">
                 <RiSendPlane2Fill />
               </button>
-            </div>
+            </form>
           </div>
         ) : (
           ""
